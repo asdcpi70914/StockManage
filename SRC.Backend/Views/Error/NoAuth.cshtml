@@ -1,0 +1,17 @@
+﻿
+@{
+    ClaimsIdentity identity = (ClaimsIdentity)User?.Identity;
+    string userName = string.Empty;
+
+    if(identity != null){
+        userName = identity.GetClaim(UserClaims.ClaimsKey.USER_NAME).Value;
+    }
+}
+
+<div class="text-center"> 
+    @*<h1 class="display-4">場館管理系統</h1>*@
+
+    
+    <h1>@userName 您好！</h1>
+    <h1 class="text-danger">您無此功能權限！</h1>
+</div>

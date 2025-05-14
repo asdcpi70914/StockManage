@@ -1,0 +1,418 @@
+﻿@model SRCLayoutAOE
+
+@{
+
+    //string formId = string.IsNullOrEmpty(Model.formId) ? "aoe_form" : Model.formId;
+    string formId = "aoe_form";
+
+    if(string.IsNullOrWhiteSpace(Model.formId) && Model.AOEObject != null && Model.AOEObject is IAOE)
+    {
+        formId = ((IAOE)Model.AOEObject).Action switch
+        {
+            ActionMode.ADD => "add_form",
+            ActionMode.EDIT => "edit_form",
+            ActionMode.Modify => "modify_form",
+            _ => "aoe_form"
+        };
+    }
+    else
+    {
+        formId = Model.formId;
+    }
+
+    string modalSize = Model.ViewSize switch
+    {
+        ModalSize.Small => "modal-sm",
+        ModalSize.Large => "modal-lg",
+        ModalSize.ExtraLarge => "modal-xl",
+        ModalSize.FullScreen => "modal-fullscreen",
+        ModalSize.Default => "",
+        _ => ""
+    };
+
+    string heightStyle = string.Empty;
+    if(!string.IsNullOrWhiteSpace(Model.Height)){
+        heightStyle = $"height:{Model.Height}";
+    }
+
+    string resultPageDiv = $"#{formId}_aoe_ly_result";
+
+    if (!string.IsNullOrWhiteSpace(Model.ResultTargetDivID))
+    {
+        resultPageDiv = $"#{Model.ResultTargetDivID}";
+    }
+}
+
+<@(Model.IsDivPage ? "div" : "form") method="post" action="@Url.Action(Model.Action,Model.Controller)" id="@formId" 
+    enctype="@(string.IsNullOrEmpty(Model.Enctype) ? "application/x-www-form-urlencoded" : Model.Enctype)">
+
+    <div 
+        id="@($"{formId}_aoe_ly_modal")" 
+        class="modal fade fadeInLeft"
+        tabindex="-1" 
+        role="dialog" 
+        data-bs-backdrop="static" 
+        data-bs-keyboard="false"
+        aria-labelledby="albl-aoe" 
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered @(modalSize)" 
+        style="@(heightStyle)">
+
+            <div class="modal-content" style="@(heightStyle) ">
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title" id="@($"{formId}_aoe_ly_title")">@Model.Title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body gy-3" @(Model.NeedOverflow ? "style=overflow-y:auto;overflow-x:hidden;height:550px;" : "")>
+                    <partial name="@Model.View" model="@Model.AOEObject" />
+                </div>
+                 
+                <div class="modal-footer">
+               
+                    <div class="hstack gap-2 justify-content-end">
+
+                        @if (!Model.NoCancelButton)
+                        {
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">關閉</button>
+                        }
+                        
+                        @*<button type="submit" class="btn btn-success" id="add-btn">Add Customer</button>*@
+
+                        @if (!Model.NoSaveButton && !Model.IsDivPage)
+                        {
+                            <button type="submit" class="btn @(Model.SaveBtnColor)" id="@($"{formId}_aoe_btn")">@Model.SaveButtonDesc</button>
+                        }
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</@(Model.IsDivPage ? "div" : "form")>
+
+
+<div id="@($"{formId}_aoe_ly_result")">
+
+</div>
+
+@if (!Model.NoSaveButton && !Model.IsDivPage)
+{
+    <script>
+        document.querySelector('@($"#{formId}_aoe_btn")').addEventListener("click", function (e) {
+
+        var form = document.getElementById("@formId");
+        let valid = form.checkValidity();
+        
+
+        let cmpobj = $(".src_cmp");
+        
+        //pre check
+        for(oidx = 0 ; oidx<cmpobj.length ; oidx++){
+            
+            let rule = $(cmpobj[oidx]).attr("src_cmpv");
+            
+            let rules = rule.split(';');
+            
+            for(i =0 ;i<rules.length ; i++){
+                let subr = rules[i].split(':');
+                if(subr[0] == 'b'){
+                    let goalVal = parseInt(subr[1]);
+                    let targetVal = parseInt($("#"+$(cmpobj[oidx]).attr("src_cmpid")).val());
+                    let selfVal = parseInt($(cmpobj[oidx]).val());
+                    if(isNaN(selfVal)){
+                        selfVal=0;
+                    }
+
+                    if(isNaN(targetVal)){
+                        targetVal=0;
+                    }
+
+                    if(targetVal+selfVal > goalVal){
+                        let showmsg = $(cmpobj[oidx]).attr("src_cmpmsg");
+                        Swal.fire({
+                            icon:'warning',
+                            text:showmsg
+                        });
+
+                        e.preventDefault();
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (valid) {
+
+
+            e.preventDefault();
+
+            
+            let len = $("@($"#{formId}") input[type='file']").length;
+            if(len > 0){
+
+
+                let uidata = new FormData();
+
+               $("@($"#{formId}") input[type='file']").each(function(){
+                    let fi = $(this).get(0).files;
+                    if(fi.length > 0){
+                        for (var i = 0; i < fi.length;i++){
+                            uidata.append($(this).attr("name"),fi[i]);
+                        }     
+                    }
+               });
+
+
+               $("@($"#{formId}") input[type='text']").each(function(){
+                      uidata.append($(this).attr("name"),$(this).val());
+               });
+
+               $("@($"#{formId}") select").each(function(){
+                   if($(this).attr("multiple") == "multiple"){
+                       var name = $(this).attr("name")
+                       var obj = $(this).val();
+                       for(var key in obj){
+                           uidata.append(name,obj[key]);
+                       };
+                   }
+                   else{
+                       uidata.append($(this).attr("name"),$(this).val());
+                   }
+                      
+               });
+
+               $("@($"#{formId}") textarea").each(function(){
+                   console.log($(this).attr("ismce"));
+                  if($(this).attr("ismce") == "true"){
+                       console.log("ISMCE");
+                       console.log($(this).attr("id"));
+                       console.log(tinymce.get($(this).attr("id")).getContent());
+                       uidata.append($(this).attr("name"),tinymce.get($(this).attr("id")).getContent());
+
+                   }else{
+                       uidata.append($(this).attr("name"),$(this).val());
+                   }
+                      
+@*                      uidata.append($(this).attr("name"),$(this).val()); *@
+               });
+
+               $("@($"#{formId}") input[type='date']").each(function(){
+                      uidata.append($(this).attr("name"),$(this).val());
+               });
+
+               $("@($"#{formId}") input[type='datetime-local']").each(function(){
+                      uidata.append($(this).attr("name"),$(this).val());
+               });
+
+
+               $("@($"#{formId}") input[type='hidden']").each(function(){
+                      uidata.append($(this).attr("name"),$(this).val());
+               });
+                         
+               $("@($"#{formId}")").find(":checkbox:checked, :radio:checked").each(function () {
+                   console.log($(this).attr("name"))
+                   console.log(this.name)
+                        uidata.append($(this).attr("name"), $(this).val());
+                    });
+
+                console.log(uidata)
+                    
+                $.ajax({
+                        url: $("@($"#{formId}")").attr("action"),
+                        type: "post",
+                        contentType:false,
+                        processData:false,
+                        data:uidata,
+                        beforeSend: function (e) {
+                            $("@($"#{formId}_aoe_ly_modal")").modal('hide');
+                            _srcvalley_pg_loading();
+                        },
+                        complete: function (e) {
+                            _srcvalley_pg_loading_stop();
+                        },
+                        success: function (pg) {
+                            let _pgHtml = $.parseHTML(pg);
+                            let _tmpHtml = document.createElement("__tmp_html__");
+                            $(_tmpHtml).append(_pgHtml);
+                            let _lypg_obj = $(_tmpHtml).find(".src_pg_success");
+                            //let _lypg_success = "TRUE";
+                            let _lypg_success = "";
+
+
+                            if (_lypg_obj.length > 0) {
+                                _lypg_success = $(_lypg_obj).val();
+                            }
+
+                            _pgHtml = null;
+                            _tmpHtml = null;
+                            
+                            $("@($"{resultPageDiv}")").html(pg);
+
+                            if (_lypg_success == "TRUE" && typeof _src_aoely_success_back == 'function') {
+                                _src_aoely_success_back();
+                            }
+                        }
+                     
+                    });
+
+            }else{
+
+
+                  let uidata =  $("@($"#{formId}")").serialize();
+
+                $.ajax({
+                        url: $("@($"#{formId}")").attr("action"),
+                        type: "post",
+                        data:uidata,
+                        beforeSend: function (e) {
+                            $("@($"#{formId}_aoe_ly_modal")").modal('hide');
+                            _srcvalley_pg_loading();
+                        },
+                        complete: function (e) {
+                            _srcvalley_pg_loading_stop();
+                        },
+                        success: function (pg) {
+                            let _pgHtml = $.parseHTML(pg);
+                            let _tmpHtml = document.createElement("__tmp_html__");
+                            $(_tmpHtml).append(_pgHtml);
+                            let _lypg_obj = $(_tmpHtml).find(".src_pg_success");
+                            //let _lypg_success = "TRUE";
+                            let _lypg_success = "";
+                            
+
+                            if (_lypg_obj.length > 0) {
+                                _lypg_success = $(_lypg_obj).val();
+                            }
+
+                            _pgHtml = null;
+                            _tmpHtml = null;
+                            
+                            //$("@($"#{formId}_aoe_ly_result")").html(pg);
+
+                            $("@($"{resultPageDiv}")").html(pg);
+
+                             if (_lypg_success == "TRUE" && typeof _src_aoely_success_back == 'function') {
+                                _src_aoely_success_back();
+                            }
+
+                        }
+                        
+                     
+                    });
+
+            }
+
+         
+        }
+    })
+    </script>
+}
+
+<script>
+
+@*    //colin:防止scrollY Datatable header欄位不正常顯示
+    //$("#@(formId)_aoe_ly_modal").on('shown.bs.modal', function (e) {
+    //    $($.fn.dataTable.tables(true)).DataTable()
+    //        .columns.adjust();
+    //});*@
+
+
+    if (typeof _src_aoeLy_Show != 'function') {
+        function _src_aoeLy_Show(id) {
+            @*console.log("before func：" + id)*@
+            if(id=="" || id==null){
+                id="@formId";
+            }
+            @*console.log("after func：" + id)*@
+            $("#" + id + "_aoe_ly_modal").modal('show');
+        }
+    }
+
+    if (typeof _src_aoeChangeAction != 'function') {
+        function _src_aoeChangeAction(id, url) {
+            @*console.log(id);*@
+            $("#" + id).attr("action", url);
+        }
+    }
+
+    if (typeof _src_aoeChangeTitle != 'function') {
+        function _src_aoeChangeTitle(id, title) {
+            if(id=="" || id==null){
+                id="@formId";
+            }
+            $("#" + id +"_aoe_ly_title").html(title);
+        }
+    }
+
+    if (typeof _src_aoeInitUI != 'function') {
+        function _src_aoeInitUI(id) {
+
+            let oriId = "@formId";
+            if (id === undefined || id == null) {
+                id = oriId;
+            }
+
+            $("#" + id + " [data-src-initrol]").each( (idx,itm) => {
+                $(itm).removeAttr("readonly");
+            });
+
+            $("#" + id + " [data-src-initdis]").each( (idx,itm) => {
+                $(itm).removeAttr("disabled");
+            });
+
+            $("#" + id + " [data-src-initsel]").each( (idx,itm) => {
+                $(itm).val($(itm).find("option:first").val());
+            });
+
+            $("#" + id + " [data-src-initemp]").each( (idx,itm) => {
+                $(itm).val("");
+            });
+
+            $("#" + id + " [data-src-initreq]").each( (idx,itm) => {
+               $(itm).attr("required","");
+            });
+
+            $("#" + id + " [data-src-initrmv]").each( (idx,itm) => {
+               $(itm).remove();
+            });
+
+            $("#" + id + " [data-src-initchk]").each( (idx,itm) => {
+                $(itm).prop("checked", false);
+            });
+
+            $("#" + id + " [data-src-initred]").each( (idx,itm) => {
+                $(itm).prop("readonly", false);
+            });
+
+            $("#" + id + " [data-src-initstg]").each((idx, itm) => {
+                $(itm).bootstrapToggle('off');
+            });
+
+            $("#" + id + " [data-src-initgpbtn]").each((idx, itm) => {
+                $(itm).children().removeClass("active");
+                $(itm).children().children().prop("checked", false);
+            });
+
+
+            $("#" + id + " [data-src-initdate]").each((idx, itm) => {
+
+                $(itm).daterangepicker({
+                    singleDatePicker: true,
+                    timePicker: true,
+                    timePicker24Hour: true,
+                    startDate: moment().startOf('hour'),
+                    endDate: moment().startOf('hour').add(32, 'hour'),
+                    minYear: 1901,
+                    locale: {
+                        format: 'YYYY-MM-DD HH:mm:ss'
+                    }
+                });
+
+                $(itm).val("");
+            });
+        }
+    }
+
+
+</script>

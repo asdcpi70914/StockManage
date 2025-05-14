@@ -1,0 +1,16 @@
+﻿@model SRCTools
+
+ @inject MenusAuth Menus
+
+@{
+    List<string> Urls = Menus.Urls;
+}
+
+
+@if(Urls != null && (Model.AuthorityUrl != null) && Urls.Contains(Model.AuthorityUrl.ToUpper()))
+{
+    <button id="@Model.id" class="btn btn-primary btn-label waves-effect waves-light" style="font-family:新細明體">
+        <i class="fa-solid fa-download label-icon align-middle fs-16 me-2"></i>@(string.IsNullOrEmpty(Model.Desc) ? "下載" : Model.Desc)
+    </button>
+}
+

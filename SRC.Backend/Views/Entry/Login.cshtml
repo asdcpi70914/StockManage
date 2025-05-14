@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+@{
+    ViewBag.Title = "登入";
+    Layout = null;
+    string loginMessage = ViewData["LoginMessage"] as string;
+    string companyTitle = "源碼洞";
+}
+
+<html lang="en" data-layout="vertical" data-topbar="light" data-layout-mode="light" data-sidebar-size="lg" data-sidebar-image="none" data-body-image="img-3" data-preloader="disable">
+<head>
+    
+    <partial name="~/Views/Shared/_title_meta.cshtml" />
+    <partial name="~/Views/Shared/_head_css.cshtml" />
+    
+    <link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+    <!-- Sweet Alerts js -->
+    <script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-image: url("../../assets/images/home_yoga_bg_pattern.jpg");
+            background-repeat:repeat;
+        }
+    </style>
+</head>
+
+<body>
+
+     <div class="auth-page-wrapper pt-5">
+            <!-- auth page content -->
+            <div class="auth-page-content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="text-center mt-sm-5 mb-4 text-white-50">
+                                <div>
+                                    <span class="d-inline-block auth-logo fs-1 text-primary">
+                                        @*<img src="~/assets/images/logo.svg" alt="" height="50">*@
+                                        @companyTitle
+                                    </span>
+                                </div>
+                                <p class="text-info mt-3 fs-3 fw-semibold">
+                                
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-8 col-lg-6 col-xl-5">
+                        <div class="card mt-0 card-bg-fill">
+                            
+                                <div class="card-body p-4"> 
+                                    <div class="text-center mt-2">
+                                    <h1 class="text-primary">庫存管理系統</h1>
+                                    </div>
+                                    <div class="p-2 mt-4">
+                                    <form action="@Url.Action("Login", "Entry")" method="post" id="LoginForm">
+            
+                                            <div class="mb-3">
+                                            <label for="account" class="form-label">帳號</label>
+                                            <input type="text" class="form-control" id="account" name="Account" placeholder="請輸入帳號">
+                                            </div>
+                    
+                                            <div class="mb-3">
+                                                <label class="form-label" for="password-input">密碼</label>
+                                                <div class="position-relative auth-pass-inputgroup mb-3">
+                                                <input type="password" class="form-control pe-5 password-input" placeholder="請輸入密碼" name="password" id="password-input">
+                                                <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" 
+                                                type="button" id="password-addon" onclick="showpassword()"><i class="ri-eye-fill align-middle" id="password-icon"></i></button>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-check">
+                                            </div>
+
+                                        <div class="mt-4 row" style="justify-content:space-around">                                              
+                                                    <button class="btn btn-primary" type="submit">一般登入</button>                                              
+                                            </div>
+
+                                    </form>
+
+                                    </div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+
+                        </div>
+                    </div>
+                    <!-- end row -->
+                </div>
+                <!-- end container -->
+            </div>
+            <!-- end auth page content -->
+
+            <!-- footer -->
+            <footer class="footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="text-center">
+                            <p class="mb-0 text-muted">&copy; <script>document.write(new Date().getFullYear())</script> 源碼洞 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+            <!-- end Footer -->
+        </div>
+        <!-- end auth-page-wrapper -->
+@*
+
+    @Html.Partial("~/Views/Shared/_vendor_scripts.cshtml")*@
+
+    <!-- password-addon init -->
+@*     <script src="~/assets/js/pages/password-addon.init.js"></script> *@
+
+</body>
+</html>
+
+    @if (!string.IsNullOrWhiteSpace(loginMessage))
+    {
+        <script type="text/javascript">
+
+        Swal.fire({
+            position: 'center',
+            icon: 'error',
+            html: "@loginMessage",
+            @*title: 'Customer inserted successfully!',*@
+            @*showConfirmButton: false,*@
+            @*timer: 2000,*@
+            @*showCloseButton: true*@
+        });
+        </script>
+    }
+
+
+        <script>
+      
+            function showpassword() {
+                var icon = document.getElementById("password-icon");
+                var type = document.getElementById("password-input").type;
+                if (type == "password") {
+                    document.getElementById("password-input").type = "tex";
+                    icon.classList.remove("ri-eye-fill");
+                    icon.classList.add("ri-eye-off-fill");
+                }
+                else {
+                    document.getElementById("password-input").type = "password";
+                    icon.classList.add("ri-eye-fill");
+                    icon.classList.remove("ri-eye-off-fill");
+                }
+            }
+
+            function LoginAD() {
+                $("#LoginForm").attr("action", "@Url.Action("LoginAD","Entry")");
+                $("#LoginForm").submit();
+            }
+        </script>
+  

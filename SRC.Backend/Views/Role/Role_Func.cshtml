@@ -1,0 +1,108 @@
+﻿@model RoleFunc
+
+<div class="row justify-content-center">
+    <input type="hidden" value="@Model.RolePID" name="RolePID" />
+    <div class="mb-2 col-6">
+        <div class="">
+            <span class="list-group-item bg-light" for="">帳號列表</span>
+            <div class="list-group" style="">
+                <div>
+                    @if ((Model != null) && (Model.UserOwnRole != null))
+                    {
+                        for (int i = 0; i < Model.UserOwnRole.Count; i++)
+                        {
+                            <a href="#" class="list-group-item list-group-item-action ">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="membsCheck_add_@i" name="membsPID" 
+                                    value="@Model.UserOwnRole[i].user_id" @if (Model.UserOwnRole[i].IsSelected) { @("checked")} />
+                                    <label class="custom-control-label" for="membsCheck_add_@i">@(Model.UserOwnRole[i].name_ch) @("(" + Model.UserOwnRole[i].account + ")")</label>
+                                </div>
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="mb-2 col-6">
+        <div class="tpr-tree p-2 border">
+            @*<button type="button" class="tpr-tree-checkAll btn btn-danger btn-sm">全選</button>
+            <button type="button" class="tpr-tree-uncheckAll btn btn-danger btn-sm">取消</button>*@
+            <button type="button" class="tpr-tree-toggle btn btn-primary btn-sm">收合</button>
+        </div>
+        <div id="funcTree">
+        </div>
+    </div>
+
+
+</div>
+
+
+
+    <!-- tree tmpl -->
+    <script id="viewTreeTmpl" type="text/x-jsrender">
+        <li id="" class="d-flex align-items-center">
+            <span style="width:{{:1*20}}px;cursor:pointer;" id="tpr-tree-p-{{:pid}}" class="pr-2 text-right tpr-tree-span tpr-tree-p-{{:pid}}">
+                <i class="tpr-tree-icon fa fa-caret-right fa-1x" aria-hidden="true"></i>
+            </span>
+            <div class=" custom-control custom-checkbox my-1 mr-sm-2">
+                <input {{if checked && !hasChild}} checked{{/if}} type="checkbox" hasChild="{{:hasChild}}" hasParent="{{:hasParent}}" {{if hasParent}} parent="tpr-tree-ck-p-{{:~parentPid}}" {{/if}} pid="{{:type}}-{{:pid}}" id="tpr-tree-ck-p-{{:pid}}" class="tpr-tree-ck custom-control-input" name="funcsPID" value="{{:pid}}">
+                <label style="cursor:pointer;" class="custom-control-label" for="tpr-tree-ck-p-{{:pid}}"><i class="fa fa-{{:icon}} fa-1x" aria-hidden="true"></i> {{:name}}</label>
+
+            </div>
+        </li>
+        {{if hasChild}}
+
+        <ul class=" ">
+            {{for child ~parentPid=pid itemVar="~child"}}
+            <div class=" tpr-tree-c-{{:~parentPid}} tpr-tree-div">
+                {{if hasChild}}
+                {{include tmpl="#viewTreeTmpl"/}}
+                {{else}}
+                <li id="" class=" d-flex align-items-center">
+                    <span style="width:{{:1*20}}px;cursor:pointer;" id="tpr-tree-p-{{:pid}}" class="tpr-tree-ck-c-{{:~parentPid}} pr-2 text-right tpr-tree-span tpr-tree-p-{{:pid}}">
+                    </span>
+                    <div class="custom-control custom-checkbox my-0 mr-sm-2">
+                        <input {{if checked}} checked{{/if}} type="checkbox" hasParent="{{:hasParent}}" {{if hasParent}} parent="tpr-tree-ck-p-{{:~parentPid}}" {{/if}} hasChild="{{:hasChild}}" pid="{{:type}}-{{:pid}}" id="tpr-tree-ck-p-{{:pid}}" class="tpr-tree-ck custom-control-input" name="funcsPID" value="{{:pid}}">
+                        <label style="cursor:pointer;" class="custom-control-label" for="tpr-tree-ck-p-{{:pid}}"><i class="fa fa-{{:icon}} fa-1x" aria-hidden="true"></i> {{:name}}</label>
+                    </div>
+
+                </li>
+                {{/if}}
+            </div>
+            {{/for}}
+        </ul>
+
+        {{/if}}
+    </script>
+
+<script>
+
+    $(document).ready(init_funclist);
+
+    function init_funclist() {
+            
+            init_render_rolefun(JSON.stringify(@Html.Raw(Model.FuncListForJson)));
+            init_tree();
+        }
+
+
+    function init_render_rolefun(privilegeTree) {
+
+        var tmpl = $.templates("#viewTreeTmpl");
+        var html = tmpl.render(JSON.parse(privilegeTree));
+        //$('.tpr-tree').append(html);
+        $("#funcTree").html(html);
+        $.views.settings.allowCode(true);
+
+    }
+
+    function init_tree() {
+        var tree = $('.tpr-tree').tprTree('show');
+        //$('#btnAdd-rolefunc').on('click', function () {
+        //    var ret = tree.getChecked();
+        //    console.log(ret);
+        //});
+    }
+</script>

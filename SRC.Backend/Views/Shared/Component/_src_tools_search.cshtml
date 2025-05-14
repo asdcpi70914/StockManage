@@ -1,0 +1,18 @@
+﻿@model SRCTools
+
+@inject MenusAuth Menus
+
+@{
+    List<string> Urls = Menus.Urls;
+}
+
+@if (Model.IgnoreAuthUrl || (Urls != null && (Model.AuthorityUrl != null) && Urls.Contains(Model.AuthorityUrl.ToUpper())))
+{
+    
+<button id="@Model.id" type="button" class="btn btn-primary btn-label">
+    <i class="fa fa-search label-icon align-middle fs-16 me-2"></i>
+    @(string.IsNullOrEmpty(Model.Title) ? "查詢" : Model.Title)
+</button>
+
+}
+

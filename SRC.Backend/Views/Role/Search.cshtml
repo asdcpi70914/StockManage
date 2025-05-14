@@ -1,0 +1,399 @@
+﻿@model RoleSearch
+
+@inject Microsoft.Extensions.Configuration.IConfiguration config
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor contextAccessor
+@inject MenusAuth Menus
+
+
+
+@{
+    bool CanEdit = (Menus != null && Menus.Urls != null && Menus.Urls.Contains("/Role/Edit".ToUpper()));
+    bool CanDelete =(Menus != null && Menus.Urls != null && Menus.Urls.Contains("/Role/DELETE".ToUpper()));
+    bool CanEditFun = (Menus != null && Menus.Urls != null && Menus.Urls.Contains("/Role/EDIT_FUNC".ToUpper()));
+    int index = 1;
+}
+
+@{
+    string controller = "Role";
+    string editAction = "Edit";
+    string editAuthorization = "EDIT_FUNC";
+    string createAction = "Add";
+    string delAction = "DELETE";
+
+    //宣告一個刪除按下產生的確認畫面
+    SRCLayoutDelete lyDelConfirmPage = new SRCLayoutDelete()
+            {
+                formId = "delete_cf_page",
+                Action = delAction, //到哪一個action去刪除
+                Controller = controller, //到哪一個controller
+            };
+
+    //初始化新增的UI,不需要在他按下新增的時候再去帶畫面回來,這樣會比較慢
+    SRCLayoutAOE lyAddAoe = new SRCLayoutAOE()
+            {
+                formId="add_form",
+                View = "Role_Add",//通常是編輯或新增的view名稱
+                Title = "新增角色資料",
+                Action = createAction,
+                Controller = controller,
+                AOEObject = new RoleAdd() { Action = ActionMode.ADD }, //一班新增都會給一個空的物件,然後指定action為add
+            };
+
+    //新增的按鈕
+    SRCTools create = new SRCTools
+            {
+                IgnoreAuthUrl = false, //這裡實際要改成false才有驗證，demo只是為了方便顯示
+                id = $"btn-add",
+                AuthorityUrl = @Url.Action(createAction, controller),
+            };
+
+    //先定義一個清單表的del物件,之後在for裡面依序給值
+    SRCTools del = new SRCTools
+            {
+                ConfirmPageModelID = "delete_cf_page",
+                IgnoreAuthUrl = false,
+                AuthorityUrl = @Url.Action(delAction, controller), //權限
+            };
+
+    SRCTools edit = new SRCTools
+            {
+                IgnoreAuthUrl = false,
+                AuthorityUrl = @Url.Action(editAction, controller), //權限
+            };
+
+    SRCTools editFunc = new SRCTools
+            {
+                IgnoreAuthUrl = false,
+                AuthorityUrl = @Url.Action(editAuthorization, controller), //權限
+                Desc = "帳號/權限"
+            };
+}
+
+
+<!-- 載入確認刪除的畫面 -->
+<partial name="Component/_src_ly_delete" for="@lyDelConfirmPage" />
+
+<!-- 初始化新增畫面 -->
+<partial name="Component/_src_ly_aoe" model="@lyAddAoe" />
+
+<div id="aoeDiv"></div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">查詢結果</h4>
+            </div><!-- end card header -->
+
+            <div class="card-body">
+                <div id="customerList">
+                    <div class="row g-4 mb-3">
+                        <div class="col-sm-auto">
+                            <div>
+                                @if (CanDelete)
+                                {
+                                    <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
+                                }
+                                <partial name="Component/_src_tools_add" for="@create)" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive table-card mt-3 mb-1">
+                        <table class="table table-sm dt-responsive align-middle table-hover table-bordered" id="search-table-lv1">
+                            <thead class="table-light">
+                                <tr style="white-space:nowrap">
+                                    <th scope="col" style="width: 50px;">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                                        </div>
+                                    </th>
+                                    <th>角色名稱</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list form-check-all">
+                                @{
+                                    int idx = 0;
+                                }
+                                @if (Model == null) return;
+                                @foreach (var each in Model.RoleList)
+                                {
+                                    idx++;
+                                    <tr id="item_for_@(each.pid)">
+                                        <th scope="row">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="chk_child" value="@each.pid">
+                                            </div>
+                                        </th>
+                                        <td class="role_name">@each.Role_Name</td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <div class="edit">
+                                                    @{
+                                                        editFunc.id = $"btn-editfunc-pid_{@idx}";
+                                                        editFunc.mainkey = @each.pid.ToString();
+                                                    }
+                                                    <partial name="Component/_src_tools_cust" for="@editFunc)" />
+                                                </div>
+
+                                                <div class="edit">
+                                                    @{
+                                                        edit.id = $"btn-edit-pid_{@idx}";
+                                                        edit.mainkey = @each.pid.ToString();
+                                                    }
+                                                    <partial name="Component/_src_tools_edit" for="@edit)" />
+                                                </div>
+                                                <div class="remove">
+                                                    @{
+                                                        del.id = $"btn-del-pid_{@idx}";
+                                                        del.mainkey = each.pid.ToString();
+                                                    }
+                                                    <partial name="Component/_src_tools_delete" for="@del)" />
+
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    @if (Model == null) return;
+                    else
+                    {
+                        <partial name="Component/_src_ly_pagination" model="@Model.Pagination" />
+                    }
+                </div>
+            </div><!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+
+
+<script>
+
+    function bindAddTool() {
+
+        //清除UI上過去輸入的資料
+        $('#btn-add').on('click', function() {
+
+            $.each($("#add_form input"), function(idx) {
+                if ($(this).attr("type") == "checkbox") {
+                    $(this).prop("checked", false);
+                } else {
+                    $(this).val("");
+                }
+            });
+
+            //下面兩行是針對特殊情況另外做清除
+            //$("#aoe-BannerPath").attr("src", "");
+            //$("#aoe-BannerFile").attr("required","");
+            
+            _src_aoeLy_Show("add_form");
+
+        });
+    }
+
+    function bindEditTools() {
+        $.each($("[id^='btn-edit-pid_']"), function() {
+            $(this).on('click', function() {
+
+                GetEditView($(this).attr("mainkey")).then(
+                    success => {
+                        _src_aoeLy_Show("edit_form");
+                    },
+                    fail => {
+                        console.log("error");
+                    }
+                );
+
+            });
+
+        });
+    }
+
+    function GetEditView(id) {
+
+        let p1 = new Promise((resolve, reject) => {
+
+            $.ajax({
+                type: "Get",
+                url: "@Url.Action(editAction, controller)",
+                data: { "pid": id },
+                dataType: "html",
+                success: function(result) {
+                    $('#aoeDiv').html(result);
+                    resolve(true);
+                },
+                beforeSend: function() {
+                    _srcvalley_pg_loading();
+                },
+                complete: function() {
+                    _srcvalley_pg_loading_stop();
+                }
+
+            });
+
+        });
+
+        return p1;
+    }
+
+    function bindEditFuncTools() {
+        $.each($("[id^='btn-editfunc-pid_']"), function () {
+            $(this).on('click', function () {
+
+                GetEditFuncView($(this).attr("mainkey")).then(
+                    success => {
+                        _src_aoeLy_Show("editfunc_form");
+                    },
+                    fail => {
+                        console.log("error");
+                    }
+                );
+
+            });
+
+        });
+    }
+
+    function GetEditFuncView(id) {
+
+        let p1 = new Promise((resolve, reject) => {
+
+            $.ajax({
+                type: "Get",
+                url: "@Url.Action(editAuthorization, controller)",
+                data: { "pid": id },
+                dataType: "html",
+                success: function (result) {
+                    $('#aoeDiv').html(result);
+                    resolve(true);
+                },
+                beforeSend: function () {
+                    _srcvalley_pg_loading();
+                },
+                complete: function () {
+                    _srcvalley_pg_loading_stop();
+                }
+
+            });
+
+        });
+
+        return p1;
+    }
+
+    function bindDeleteTools() {
+
+        $.each($("button[id^='btn-del-pid_']"), function() {
+            $(this).on('click', function() {
+                _src_delete_ly_clearKeyMap("delete_cf_page");
+
+                //綁要刪除的pk,如果要多參數可以多幾筆,且可以把mainkey用json格式帶入
+                _src_delete_ly_insertKeyMap("delete_cf_page", "pid", $(this).attr("mainkey"));
+                _src_delete_ly_show("delete_cf_page");
+            });
+        });
+    }
+
+    function deleteMultiple() {
+        ids_array = [];
+        var items = document.getElementsByName('chk_child');
+        Array.from(items).forEach(function(ele) {
+            if (ele.checked == true) {
+                //var trNode = ele.parentNode.parentNode.parentNode;
+                //var id = trNode.querySelector('.id a').innerHTML;
+                var id = ele.value;
+                ids_array.push(id);
+            }
+        });
+
+        if (typeof ids_array !== 'undefined' && ids_array.length > 0) {
+
+            Swal.fire({
+                title: '確定要刪除這些選擇的項目嗎？',
+                showCancelButton: true,
+                confirmButtonColor: '#b20b0bc9',
+                confirmButtonText: "確定刪除",
+                cancelButtonText: "取消",
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+                    let idx = -1;
+                    let chkValues = $('input:checked:checkbox[name=chk_child]').map(function() {
+                        idx++;
+                        return "pid[" + idx + "]=" + $(this).val();
+                    }).get().join('&');
+
+                    //把抓到的資料post到後端去刪除
+                    console.log(chkValues);
+
+                    $.ajax({
+                        url: "@Url.Action(delAction,controller)",
+                        data: chkValues,
+                        dataType: "html",
+                        type: "POST",
+                        beforeSend: function() { _srcvalley_pg_loading(); },
+                        complete: function() { _srcvalley_pg_loading_stop(); },
+                        success: function(pg) {
+
+                            //用js移除刪除的項目
+                            Array.from(ids_array).forEach(function(id) {
+                                
+                                $("#item_for_"+id).remove();
+                            });
+
+                            document.getElementById('checkAll').checked = false;
+
+                            Swal.fire('已刪除!', '', 'success')
+
+                        }
+                    });
+
+                } else if (result.isDenied) {
+                    //Swal.fire('Changes are not saved', '', 'info')
+                }
+            })
+        } else {
+            Swal.fire({
+                title: '請至少選擇一個項目',
+                confirmButtonClass: 'btn btn-info',
+                buttonsStyling: false,
+                showCloseButton: true
+            });
+        }
+    }
+
+    function initCheckAll() {
+        var checkAll = document.getElementById("checkAll");
+        if (checkAll) {
+            checkAll.onclick = function() {
+                var checkboxes = document.querySelectorAll('.form-check-all input[type="checkbox"]');
+                if (checkAll.checked == true) {
+                    Array.from(checkboxes).forEach(function(checkbox) {
+                        checkbox.checked = true;
+                        checkbox.closest("tr").classList.add("table-active");
+                    });
+                } else {
+                    Array.from(checkboxes).forEach(function(checkbox) {
+                        checkbox.checked = false;
+                        checkbox.closest("tr").classList.remove("table-active");
+                    });
+                }
+            };
+        }
+    }
+
+    bindAddTool();
+    bindEditTools();
+    bindEditFuncTools();
+    bindDeleteTools();
+    initCheckAll();
+</script>

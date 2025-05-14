@@ -1,0 +1,51 @@
+﻿@model SRCMenu
+@{
+    string tagentView = "_self";
+  
+    if (Model.hasChild)
+    {
+       
+
+        <li class="nav-item">
+            <a class="nav-link menu-link" href="#sidebarLayouts@(Model.pid)" data-bs-toggle="collapse" role="button" target="@tagentView"
+           aria-expanded="false" aria-controls="sidebarLayouts@(Model.pid)">
+                <i class="@Model.icon"></i> <span data-key="">@Model.name</span>
+            </a>
+            <div class="collapse in menu-dropdown" id="sidebarLayouts@(Model.pid)">
+                <ul class="nav nav-sm flex-column">
+                    @foreach (var each in Model.child)
+                    {
+                        <partial name="_sidebar_detail" for="@each" />
+                    }
+                </ul>
+            </div>
+        </li> <!-- end Dashboard Menu -->
+        //<li class="mm-active">
+        //    <a href="#" aria-expanded="true" aria-disabled="true">
+        //        <i class="@Model.icon"></i>
+        //        @Model.name
+        //        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+        //    </a>
+        //    <ul class="">
+        //        @foreach (var each in Model.child)
+        //        {
+        //            <partial name="_siderbar" for="@each" />
+        //        }
+        //    </ul>
+        //</li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a href="@Model.url" class="nav-link" target="@tagentView"><i class="@Model.icon"></i>@Model.name</a>
+        </li>
+
+        //<li>
+        //    <a href="@Model.url" class="">
+        //        <i class="@Model.icon"></i>
+        //        @Model.name
+        //    </a>
+        //</li>
+    }
+
+}

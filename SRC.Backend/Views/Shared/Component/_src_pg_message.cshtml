@@ -1,0 +1,62 @@
+﻿@model SRCPageMessage
+@{
+    if (Model is SRCAoePageMessage && string.IsNullOrWhiteSpace(Model.TargetID))
+    {
+        Model.TargetID = ((SRCAoePageMessage)(Model)).Mode switch
+        {
+            ActionMode.EDIT => "edit_form",
+            ActionMode.ADD => "add_form",
+            ActionMode.UPLOAD => "upload_form",
+            ActionMode.Modify => "modify_form",
+            _ => ""
+        };
+    }
+
+
+}
+
+<input id="@(Model.TargetID)_src_pg_obj" value="@Model.JsonData" type="hidden" />
+<input id="@(Model.TargetID)_src_pg_success" class="src_pg_success" value="@Model.IsSuccess.ToString().ToUpper()" type="hidden" />
+@*<input id="@(Model.TargetID)_src_pg_message" value="@Model.Message" type="hidden" />*@
+
+<script type="text/javascript">
+
+    var _isOK = ("@Model.IsSuccess" == "True");
+    var icon = "success";
+    if (!_isOK) {
+       icon = "error";
+    }
+
+    var title = "@Model.Title";
+    //var text = $("#_srcvalley_pg_message_result").val();
+
+                Swal.fire({
+                  icon: icon,
+                  title: title,
+                  html : "@Model.Message"
+                }).then( (r) => {
+                    console.log("@Model.TargetID")
+                    if(_isOK == true){
+                        //console.log("CHECK2" + "@Model.TargetID")
+                        if(typeof _srcvalley_pg_message == 'function'){
+                            _srcvalley_pg_message("@Model.TargetID");
+                        }
+                    }else{
+                        //console.log("CHECK3" + "@Model.TargetID")
+                        if(typeof _srcvalley_pg_message_fail == 'function'){
+                            _srcvalley_pg_message_fail("@Model.TargetID");
+                        }
+                    }
+                    
+                });
+
+
+                  
+
+</script>
+
+@if(Model.IsSuccess){
+    <script>
+        var _src_page_success = true;
+    </script>
+}

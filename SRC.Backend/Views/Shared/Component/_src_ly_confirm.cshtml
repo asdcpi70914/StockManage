@@ -1,0 +1,122 @@
+﻿@model SRCLayoutConfrim
+@{
+    string formId = string.IsNullOrEmpty(Model.formId) ? "confirm_form" : Model.formId;
+    string title = string.IsNullOrEmpty(Model.Title) ? "系統訊息" : Model.Title;
+    string message = string.IsNullOrEmpty(Model.Message) ? "確定執行？" : Model.Message;
+
+}
+
+<form method="post" id="@formId" style="z-index:10000">
+    <div class="modal fade" id="@($"{formId}_confirm_ly_modal")" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@title</h5>
+                </div>
+                <div id="@($"{formId}_keyMap")">
+
+                </div>
+                <div class="modal-body">
+                    <h3 class="text-danger">@message</h3>
+                    @if(formId == "returntake")
+                    {
+                        <textarea class="form-control" id="Memo" name="memo" placeholder="請填寫退回原因"></textarea>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <div class="modal-footer-btn">
+                        <button type="submit" class="btn w-sm btn-danger " id="@($"{formId}_confirm_btn")">確定！</button>
+                        <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<div id="@($"{formId}_confirm_ly_result")">
+
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Callback))
+{
+    <script>
+        var _src_confirmly_success_callback = @(Model.Callback);
+    </script>
+}
+
+<script>
+
+   
+    $("#" + "@(formId)_confirmcancel_btn").on('click', function () {
+        $("#" + "@($"{formId}_confirm_ly_modal")").modal("hide");
+        if(typeof _src_confirm_ly_removeKeyMap == 'function'){
+            _src_confirmly_cancel("@formId");
+        }
+    });
+    
+    document.querySelector("@($"#{formId}_confirm_btn")").addEventListener("click", function (e) {
+
+        var form = document.getElementById("@formId");
+        let valid = form.checkValidity();
+
+        //pre check
+
+        if (valid) {
+
+            e.preventDefault();
+
+            $.ajax({
+                url: "@Url.Action(Model.Action,Model.Controller)",
+                type: "post",
+                data: $("@($"#{formId}")").serialize(),
+                beforeSend: function (e) {
+                    $("@($"#{formId}_confirm_ly_modal")").modal('hide');
+                    _srcvalley_pg_loading();
+                },
+                complete: function (e) {
+                    _srcvalley_pg_loading_stop();
+                },
+                success: function(pg) {
+                    $("@($"#{formId}_confirm_ly_result")").html(pg);
+                    if (typeof _src_confirmly_success_back == 'function') {
+                        if (typeof _src_confirmly_success_callback == 'function') {
+                            _src_confirmly_success_callback();
+                        }
+                        _src_confirmly_success_back();
+
+                    }
+                }
+            });
+
+        }
+    })
+
+    if (typeof _src_confirm_ly_insertKeyMap != 'function') {
+        function _src_confirm_ly_insertKeyMap(fid, key, val) {
+            $("#" + fid + "_keyMap").append("<input id="+key+" name='"+key+"' value='"+val+"' type='hidden' />");
+        }
+    }
+
+    if (typeof _src_confirm_ly_removeKeyMap != 'function') {
+        function _src_confirm_ly_removeKeyMap(fid, key) {
+            $("#" + fid + "_keyMap #" + key).remove();
+        }
+    }
+
+    if (typeof _src_confirm_ly_clearKeyMap != 'function') {
+        function _src_confirm_ly_clearKeyMap(fid) {
+            $("#" + fid + "_keyMap").html("");
+        }
+    }
+
+    if (typeof _src_confirm_ly_show != 'function') {
+        function _src_confirm_ly_show(fid) {
+            $("#" + fid + "_confirm_ly_modal").modal('show');
+        }
+    }
+
+
+</script>

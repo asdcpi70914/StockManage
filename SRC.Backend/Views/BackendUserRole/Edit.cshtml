@@ -1,0 +1,33 @@
+﻿@model BackendUserRoleEdit
+
+<div class="list-group">
+
+    <input type="hidden" value="@Model.UserPid" name="userPid" />
+    @for (int i = 0; i < Model.UserRoles.Count; i++)
+    {
+        <input type="hidden" value="userRoles[@(i)].index" />
+
+        <label class="list-group-item">
+            <input type="hidden" name="userRoles[@(i)].roleid" value="@Model.UserRoles[i].RoleId">
+            <input type="hidden" id="IsSelected_@(i)" name="userRoles[@(i)].isselected" value="@(Model.UserRoles[i].IsSelected ? "true" : "false")">
+            <input class="form-check-input me-1 rolecheck" mainkey="@(i)" name="userRoles[@(i)].roleId" type="checkbox"
+                   value="@Model.UserRoles[i].RoleId" @if (Model.UserRoles[i].IsSelected)
+            {
+                @("checked")
+            } />
+            @Model.UserRoles[i].RoleName
+        </label>
+    }
+</div>
+
+<script>
+    $(".rolecheck").on("click", function() {
+        var mainkey = $(this).attr("mainkey")
+        if ($(this).is(":checked")) {
+            $("#IsSelected_" + mainkey).val(true);
+        }
+        else{
+            $("#IsSelected_" + mainkey).val(false);
+        }
+    })
+</script>

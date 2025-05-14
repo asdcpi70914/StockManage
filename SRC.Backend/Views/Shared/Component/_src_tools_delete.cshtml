@@ -1,0 +1,24 @@
+﻿@model SRCTools
+@inject IHttpContextAccessor contextAccessor
+@inject IConfiguration config
+
+
+@inject MenusAuth Menus
+
+@{
+    List<string> Urls = Menus.Urls;
+}
+
+@if(Model.IgnoreAuthUrl || (Urls != null && (Model.AuthorityUrl != null) && Urls.Contains(Model.AuthorityUrl.ToUpper())))
+{
+    <button
+        id="@Model.id" 
+        mainkey="@Model.mainkey"
+        class="btn btn-sm btn-danger remove-item-btn"
+            style="font-size:14px"
+        @*data-bs-toggle="modal" *@
+        @*data-bs-target="@(string.IsNullOrWhiteSpace(Model.ConfirmPageModelID) ? "#delete_form_delete_ly_modal" : $"{Model.ConfirmPageModelID}_delete_ly_modal")"*@
+    >
+        @(string.IsNullOrWhiteSpace(Model.Desc) ? "刪除" : Model.Desc)
+    </button>
+}

@@ -1,0 +1,16 @@
+﻿@model SRCTools
+
+@inject MenusAuth Menus
+
+@{
+    List<string> Urls = Menus.Urls;
+}
+
+
+@if (Model.IgnoreAuthUrl || (Urls != null && (Model.AuthorityUrl != null) && Urls.Contains(Model.AuthorityUrl.ToUpper())))
+{
+    <button id="@Model.id" type="button" class="btn btn-info add-btn waves-effect waves-light">
+        <i class="ri-add-line align-bottom me-1"></i> @(string.IsNullOrWhiteSpace(Model.Desc) ? "新增":Model.Desc)</button>
+}
+
+

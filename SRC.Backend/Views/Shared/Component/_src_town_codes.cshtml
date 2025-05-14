@@ -1,0 +1,7 @@
+﻿@model List<system_towncode>
+
+<option value="">請選擇地區</option>
+    @foreach (var each in Model)
+    {
+        <option value="@each.TownCode">@each.TownName</option>
+    }

@@ -1,0 +1,307 @@
+﻿@model SRCLayoutModal
+
+@{
+    //string rndTxt = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+    string formId = string.IsNullOrEmpty(Model.formId) ? "md_form" : Model.formId;
+}
+
+<@(Model.IsDivPage ? "div" : "form") method="post" action="@Url.Action(Model.Action,Model.Controller)" id="@formId" enctype="@(string.IsNullOrEmpty(Model.Enctype) ? "application/x-www-form-urlencoded" : Model.Enctype)">
+    <div class="modal fade" id="@($"{formId}_md_ly_modal")" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered " role="document"
+             @(string.IsNullOrEmpty(Model.MaxModelWidth) ? "" : $"style=max-width:{Model.MaxModelWidth};") >
+            <div class="modal-content">
+                @if (!Model.HideHeader)
+                {
+                    <div class="modal-header">
+                        <h5 id="@($"{formId}_md_ly_title")" class="font-weight-bold modal-title">@Model.Title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                }
+                <div class="modal-body" id="@($"{formId}_md_ly_body")">
+                    @if(Model.View != null)
+                    {
+                        <partial name="@Model.View" model="@Model.ViewObject" />    
+                    }
+                </div>
+                <div class="modal-footer">
+                    <div class="modal-footer-btn">
+                        @if (!Model.NoSaveButton)
+                        {
+                            <button type="submit" class="btn btn-success" id="@($"{formId}_md_btn")">儲存</button>
+                        }
+                    </div>
+
+                    @if (!Model.NoCancelButton)
+                    {
+                        <button data-dismiss="modal" class="btn btn-icon btn-square btn-outline-danger btn-outline-2x">
+                            <i class="fad fa-times-circle btn-icon-wrapper"></i>取消
+                            </button>
+
+                    }
+
+                    @if (Model.HasCloseButton)
+                    {
+                        <button data-bs-dismiss="modal" class="btn btn-sm btn-icon btn-shadow btn-outline-secondary">
+                            <i class="fad fa-times-circle btn-icon-wrapper"></i>關閉
+                        </button>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</@(Model.IsDivPage ? "div" : "form")>
+
+
+<div id="@($"{formId}_md_ly_result")">
+
+</div>
+
+<input type="hidden" value="@Model.NoAutoHide.ToString().ToLower()" id='@($"{formId}_md_ly_nohide")' />
+
+@if (!Model.NoSaveButton)
+{
+    <script>
+        document.querySelector("@($"#{formId}_md_btn")" ).addEventListener("click", function (e) {
+
+        var form = document.getElementById("@formId");
+        let valid = form.checkValidity();
+
+
+        if (valid) {
+
+            e.preventDefault();
+
+            let uidata;
+            let len = $("@($"#{formId}") input[type='file']").length;
+            if(len > 0){
+
+                uidata = new FormData();
+
+               $("@($"#{formId}") input[type='file']").each(function(){
+                    let fi = $(this).get(0).files;
+                    if(fi.length > 0){
+                        uidata.append($(this).attr("name"),fi[0]);
+                    }
+               });
+
+               $("@($"#{formId}") input[type='text']").each(function(){
+                      uidata.append($(this).attr("name"),$(this).val());
+               });
+
+               $("@($"#{formId}") input[type='hidden']").each(function(){
+                      uidata.append($(this).attr("name"),$(this).val());
+               });
+                         
+               $("@($"#{formId}")").find(":checkbox:checked, :radio:checked").each(function () {
+                        uidata.append(this.name, $(this).val());
+                    });
+
+                $.ajax({
+                        url: $("@($"#{formId}")").attr("action"),
+                        type: "post",
+                        processData:false,
+                        contentType:false,
+                        data:uidata,
+                        beforeSend: function (e) {
+
+                            if($("@($"#{formId}_md_ly_nohide")").val() == "false"){
+                                $("@($"#{formId}_md_ly_modal")").modal('hide');
+                            }
+
+                            _srcvalley_pg_loading();
+                        },
+                        complete: function (e) {
+                            _srcvalley_pg_loading_stop();
+                        },
+                        success: function (pg) {
+                            let _pgHtml = $.parseHTML(pg);
+                            let _tmpHtml = document.createElement("__tmp_md_html__");
+                            $(_tmpHtml).append(_pgHtml);
+                            let _lypg_obj = $(_tmpHtml).find("#_srcvalley_pg_message_is_success");
+                            let _lypg_success = "TRUE";
+
+                            if (_lypg_obj.length > 0) {
+                                _lypg_success = $(_lypg_obj).val();
+                          @*      if(_lypg_success == "TRUE"){
+                                    $("@($"#{formId}_md_ly_modal")").modal('hide');
+                                }
+*@
+                            }
+
+                            _pgHtml = null;
+                            _tmpHtml = null;
+                            $("@($"#{formId}_md_ly_result")").html(pg);
+                             if (_lypg_success == "TRUE" && typeof _src_mdly_success_back == 'function') {
+                                _src_mdly_success_back("@formId");
+                            }
+                        }
+                    });
+
+            }else{
+                uidata =  $("@($"#{formId}")").serialize();
+                
+                $.ajax({
+                        url: $("@($"#{formId}")").attr("action"),
+                        type: "post",
+                        data:uidata,
+                        beforeSend: function (e) {
+                            
+
+                            if($("@($"#{formId}_md_ly_nohide")").val() == "false"){
+                                $("@($"#{formId}_md_ly_modal")").modal('hide');
+                            }
+
+
+                            @*$("@($"#{formId}_md_ly_modal")").modal('hide');*@
+                            _srcvalley_pg_loading();
+                        },
+                        complete: function (e) {
+                            _srcvalley_pg_loading_stop();
+                        },
+                        success: function (pg) {
+                            let _pgHtml = $.parseHTML(pg);
+                            let _tmpHtml = document.createElement("__tmp_md_html__");
+                            $(_tmpHtml).append(_pgHtml);
+                            let _lypg_obj = $(_tmpHtml).find("#_srcvalley_pg_message_is_success");
+                            let _lypg_success = "TRUE";
+
+                            if (_lypg_obj.length > 0) {
+                                _lypg_success = $(_lypg_obj).val();
+                             @*   if(_lypg_success == "TRUE"){
+                                    $("@($"#{formId}_md_ly_modal")").modal('hide');
+                                }*@
+                            }
+
+                            _pgHtml = null;
+                            _tmpHtml = null;
+                            $("@($"#{formId}_md_ly_result")").html(pg);
+                             if (_lypg_success == "TRUE" && typeof _src_mdly_success_back == 'function') {
+                                _src_mdly_success_back("@formId");
+                            }
+                        }
+                    });
+
+            }
+
+         
+        }
+    })
+    </script>
+}
+
+<script>
+
+    //colin:防止scrollY Datatable header欄位不正常顯示
+    $("#@(formId)_md_ly_modal").on('shown.bs.modal', function (e) {
+        $($.fn.dataTable.tables(true)).DataTable()
+            .columns.adjust();
+    });
+
+
+    if (typeof _src_mdLy_Show != 'function') {
+        function _src_mdLy_Show(id) {
+            if(id == null){
+                id= 'md_form';
+            }
+            $("#" + id + "_md_ly_modal").modal('show');
+        }
+    }
+
+    if (typeof _src_mdLy_Hide != 'function') {
+        function _src_mdLy_Hide(id) {
+            if(id == null){
+                id= 'md_form';
+            }
+            $("#" + id + "_md_ly_modal").modal('hide');
+        }
+    }
+
+    if (typeof _src_mdChangeAction != 'function') {
+        function _src_mdChangeAction(id, url) {
+            $("#" + id).attr("action", url);
+        }
+    }
+
+    if (typeof _src_mdChangeTitle != 'function') {
+        function _src_mdChangeTitle(id, title) {
+            if(id == null){
+                id="md_form";
+            }
+            $("#" + id +"_md_ly_title").html(title);
+        }
+    }
+
+    if (typeof _src_mdInitUI != 'function') {
+        function _src_mdInitUI(id) {
+
+            let oriId = "@formId";
+            if (id === undefined || id == null) {
+                id = oriId;
+            }
+
+            $("#" + id + " [data-src-initrol]").each( (idx,itm) => {
+                $(itm).removeAttr("readonly");
+            });
+
+            $("#" + id + " [data-src-initdis]").each( (idx,itm) => {
+                $(itm).removeAttr("disabled");
+            });
+
+            $("#" + id + " [data-src-initsel]").each( (idx,itm) => {
+                $(itm).val($(itm).find("option:first").val());
+            });
+
+            $("#" + id + " [data-src-initemp]").each( (idx,itm) => {
+                $(itm).val("");
+            });
+
+            $("#" + id + " [data-src-initreq]").each( (idx,itm) => {
+               $(itm).attr("required","");
+            });
+
+            $("#" + id + " [data-src-initrmv]").each( (idx,itm) => {
+               $(itm).remove();
+            });
+
+            $("#" + id + " [data-src-initchk]").each( (idx,itm) => {
+                $(itm).prop("checked", false);
+            });
+
+            $("#" + id + " [data-src-initred]").each( (idx,itm) => {
+                $(itm).prop("readonly", false);
+            });
+
+            $("#" + id + " [data-src-initstg]").each((idx, itm) => {
+                $(itm).bootstrapToggle('off');
+            });
+
+            $("#" + id + " [data-src-initgpbtn]").each((idx, itm) => {
+                $(itm).children().removeClass("active");
+                $(itm).children().children().prop("checked", false);
+            });
+
+
+            $("#" + id + " [data-src-initdate]").each((idx, itm) => {
+
+                $(itm).daterangepicker({
+                    singleDatePicker: true,
+                    timePicker: true,
+                    timePicker24Hour: true,
+                    startDate: moment().startOf('hour'),
+                    endDate: moment().startOf('hour').add(32, 'hour'),
+                    minYear: 1901,
+                    locale: {
+                        format: 'YYYY-MM-DD HH:mm:ss'
+                    }
+                });
+
+                $(itm).val("");
+            });
+        }
+    }
+
+
+</script>

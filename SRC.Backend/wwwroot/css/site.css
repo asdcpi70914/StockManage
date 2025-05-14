@@ -1,0 +1,36 @@
+/*html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+*/
+
+.choices__list--dropdown.is-active {
+    z-index: 99999;
+}
+
+table > thead > tr > th > hr{
+    border-style:dashed;
+    margin:0;
+}
+
+table > tbody > tr > td > hr {
+    border-style: dashed;
+    margin:0;
+}
+
+

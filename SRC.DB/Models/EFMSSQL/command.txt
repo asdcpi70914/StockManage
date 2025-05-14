@@ -1,0 +1,4 @@
+Scaffold-DbContext "Server=192.168.0.200;port=3306;Database=eproto_dev;uid=dev;pwd=12345" MySql.EntityFrameworkCore -Force -UseDatabaseNames -OutputDir Models\EFMYSQL -Context EFContext
+Scaffold-DbContext "Server=127.0.0.1;port=3306;Database=eproto_dev;uid=root;pwd=asdcpi4249103" MySql.EntityFrameworkCore -Force -UseDatabaseNames -OutputDir Models\EFMYSQL -Context EFContext
+
+Scaffold-DbContext "Server=LAPTOP-RDPN80C6\SQLEXPRESS;Database=StockManage;Trusted_Connection=true;TrustServerCertificate=true" Microsoft.EntityFrameworkCore.SqlServer -Force -UseDatabaseNames -OutputDir Models\EFMSSQL -Context EFContext

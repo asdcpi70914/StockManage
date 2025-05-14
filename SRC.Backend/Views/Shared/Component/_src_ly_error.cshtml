@@ -1,0 +1,23 @@
+﻿@model ErrorViewModel
+@{
+}
+
+
+<div class="modal fade" id="sysErrModal" tabindex="-1" role="dialog" aria-labelledby="Syste error" aria-hidden="true" data-backdrop="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-body btn-danger">
+                <input id="__err" type="hidden" value="true" />
+                <div class="row d-flex justify-content-center align-items-center">
+                    <p class="pt-3 pr-2">@Model.ErrorMessage</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#sysErrModal").modal();
+    });
+</script>

@@ -1,0 +1,100 @@
+﻿@model LayoutTopbar
+
+@inject SysAppsetting setting
+@{
+    double milliSecond = 0; 
+    var authFeatures = this.Context.Features.Get<Microsoft.AspNetCore.Authentication.IAuthenticateResultFeature>();
+    if(authFeatures != null)
+    {
+        var authProps = authFeatures.AuthenticateResult.Properties;
+        var UTCTime = authProps.ExpiresUtc.Value;
+
+        milliSecond = (UTCTime - DateTime.UtcNow).TotalMilliseconds;
+    }
+}
+<header id="page-topbar">
+    <div class="layout-width">
+        <div class="navbar-header">
+            <div class="d-flex">
+                <!-- LOGO -->
+                <div class="navbar-brand-box horizontal-logo">
+                    <a href="@Url.Action("Index", "Home")" class="logo logo-light">
+                        <span class="logo-sm">
+                        </span>
+                        <span class="logo-lg">
+                        </span>
+                    </a>                    
+                </div>
+
+                <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger shadow-none"
+                    id="topnav-hamburger-icon">
+                    <span class="hamburger-icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                </button>
+
+                <!-- App Search-->
+
+                <div class="app-search d-none d-md-block">
+                    <div class="position-relative">
+                        <h3 style="color:#666666">@* 帶動業者營運管理與資訊共享雲端服務 *@</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center">
+    @*            <div class="dropdown ms-sm-3 header-item topbar-user">
+                    <a href="@setting.PharmacyShopUrl" target="_blank"
+                       class="btn shadow-none" id="page-header-user-dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        <span class="d-flex align-items-center">
+                            <i class="fa-duotone fa-shop"></i>
+                            <span class="text-start ms-xl-2">
+                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">前台商店系統</span>
+                            </span>
+                        </span>
+                    </a>
+                </div>*@
+                <div class="dropdown ms-sm-3 header-item topbar-user">
+                    <button type="button" class="btn shadow-none" id="page-header-user-dropdown" data-bs-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        <span class="d-flex align-items-center">
+                            <img class="rounded-circle header-profile-user" src="~/assets/images/users/user-dummy-img.jpg"
+                                alt="Header Avatar">
+                            <span class="text-start ms-xl-2">
+                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">@Model.Account</span>
+                                <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">@Model.Name</span>
+                            </span>
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <!-- item-->
+                        <h6 class="dropdown-header">Welcome @Model.Name</h6>
+                        <a class="dropdown-item" href="@Url.Action("ChangePassword", "BackendUser")">
+                            <i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span
+                                class="align-middle">密碼修改</span></a>
+                        <a class="dropdown-item" href="@Url.Action("Logout", "Entry")">
+                            <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
+                                class="align-middle" data-key="t-logout">登出</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+@if (Model.Logged)
+{
+    <div id="LogOutView">
+        <partial name="_check_login_modal" />
+    </div>
+    <script>
+        function ShowLogin() {
+            $("#LogoutModal").modal("show");
+        }
+
+        setTimeout(ShowLogin,@milliSecond) 
+    </script>
+}

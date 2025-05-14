@@ -1,0 +1,22 @@
+﻿@model SRCTools
+
+@inject             MenusAuth Menus
+
+@{
+    List<string> Urls = Menus.Urls;
+}
+
+@if (Model.IgnoreAuthUrl ||
+  (Urls != null && (Model.AuthorityUrl != null) && Urls.Contains(Model.AuthorityUrl.ToUpper()))
+)
+{
+    <button id="@Model.id"
+        type="@Model.type"
+        mainkey="@Model.mainkey"
+        maininfo="@Model.maininfo"
+        data-toggle="tooltip"
+        data-placement="top"
+        class="btn btn-secdonary waves-effect waves-light">
+        @Model.Desc
+    </button>
+}

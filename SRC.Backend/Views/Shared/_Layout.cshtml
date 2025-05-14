@@ -1,0 +1,163 @@
+﻿@inject IDF_Menu menuDF
+
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="lg" data-layout-mode="light">
+@{
+    IList<SRCMenu> breadCrumbPath = null;
+    IList<SRCMenu> menus = null;
+
+    ClaimsIdentity identity = (ClaimsIdentity)User?.Identity;
+
+    SRCMenu menuParser = new SRCMenu();
+
+    if (identity != null && identity.GetClaim(UserClaims.ClaimsKey.USERID) != null)
+    {
+
+
+        string account = identity.GetClaim(UserClaims.ClaimsKey.ACCOUNT).Value;
+
+        List<SRCMenu> allmenu = menuDF.GetMenus(account); //menuDF.GetAccountMenus(account);
+
+        string menuRootName = "menu";
+        menus = menuParser.ParseTypeItems(menuRootName, allmenu);
+
+        //get breadcrumb
+        string nowController = ViewContext.RouteData.Values["controller"] as string;
+        string nowActionName = ViewContext.RouteData.Values["action"] as string;
+        string nowUrl = $"/{nowController}/{nowActionName}".ToUpper();
+
+        breadCrumbPath = menuParser.GetMenuPath(nowUrl, allmenu);
+    }
+    else
+    {
+        menus = new List<SRCMenu>();
+    }
+
+    LayoutTopbar topbar = new LayoutTopbar();
+
+    Guid UserId = new Guid();
+    if (identity != null && identity.GetClaim(UserClaims.ClaimsKey.USERID) != null)
+    {
+        Guid.TryParse(identity.GetClaim(UserClaims.ClaimsKey.USERID).Value, out UserId);
+
+        topbar.Name = identity.GetClaim(UserClaims.ClaimsKey.USER_NAME).Value;
+        topbar.Account = identity.GetClaim(UserClaims.ClaimsKey.ACCOUNT).Value;
+        topbar.Logged = identity.IsAuthenticated;
+    }
+    else
+    {
+    }
+}
+<head>
+
+    <partial name="~/Views/Shared/_title_meta.cshtml" />
+
+    @RenderSection("styles", required: false)
+
+    <partial name="~/Views/Shared/_head_css.cshtml" />
+
+    <!-- 這裡面的js主要是引用套件的 -->
+    <partial name="~/Views/Shared/_vendor_scripts.cshtml" />
+
+    <script>
+        function _src_insert_modal_lv1(html){
+            $("#__layout_modal_div1").html(html);
+        }
+
+		function _src_remove_modal_lv1(){
+            $("#__layout_modal_div1").html("");
+        }
+
+        function _src_insert_modal_lv2(html){
+            $("#__layout_modal_div2").html(html);
+        }
+
+		function _src_remove_modal_lv2() {
+			$("#__layout_modal_div2").html("");
+		}
+
+        function _src_insert_modal_lv3(html){
+            $("#__layout_modal_div3").html(html);
+        }
+
+		function _src_remove_modal_lv3() {
+			$("#__layout_modal_div3").html("");
+		}
+
+        function _show_noauth(){
+               Swal.fire({
+                 icon: 'warning',
+                 title: '系統訊息',
+                 text: "您無權限",
+               });
+        }
+    </script>
+    <style>
+        body {
+            /* background-image: url("../../assets/images/home_yoga_bg_pattern.jpg"); */
+            /* background-repeat: repeat; */
+            /* background-color: #95A5A6; */
+        }
+    </style>
+    @RenderSection("srcCallbackScript", false)
+
+</head>
+<body>
+
+    @*<div id="_print_div_modal"></div>*@
+    <div id="__layout_modal_div1"></div>
+    <div id="__layout_modal_div2"></div>
+    <div id="__layout_modal_div3"></div>
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        <partial name="~/Views/Shared/_topbar.cshtml" for="@topbar" />
+        <partial name="~/Views/Shared/_sidebar.cshtml" for="@menus" />
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content" style="">
+
+            <div class="page-content">
+                <div class="container-fluid">
+                    <partial name="~/Views/Shared/_page_title.cshtml" for="@breadCrumbPath" />
+                    @RenderBody()
+                </div>
+            </div>
+            @*@Html.Partial("~/Views/Shared/_footer.cshtml")*@
+        </div>
+
+    </div>
+    <!-- END layout-wrapper -->
+    @*@Html.Partial("~/Views/Shared/_customizer.cshtml")*@
+
+    
+    <!-- App js -->
+    <script src="~/assets/js/app.js"></script>
+
+    <!-- 這邊的JS放每一個功能頁面的初始化(原框架設計,目前我們廢棄不使用) -->
+    @*<script src="~/assets/js/pages/datatables.init.js"></script>*@
+
+    <!-- 未來會廢棄 請勿再使用 -->
+    @if (!string.IsNullOrEmpty(ViewData["ResultMessage"] as string))
+    {
+        string icon = "success";
+        if (!string.IsNullOrWhiteSpace(ViewData["ResultMessageIcon"] as string))
+        {
+            icon = @ViewData["ResultMessageIcon"] as string;
+        }
+        <script type="text/javascript">
+            Swal.fire({
+                icon: '@icon',
+                title: '系統訊息',
+                html: @ViewData["ResultMessage"],
+            });
+
+        </script>
+    }
+
+    
+    @RenderSection("scripts", required: false)
+</body>
+
+</html>

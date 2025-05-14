@@ -1,0 +1,16 @@
+﻿@model SRCTools
+
+
+@inject MenusAuth Menus
+
+@{
+    List<string> Urls = Menus.Urls;
+}
+
+
+@if (Model.IgnoreAuthUrl || (Urls != null && (Model.AuthorityUrl != null) && Urls.Contains(Model.AuthorityUrl.ToUpper())))
+{
+    <button id="@Model.id" mainkey="@Model.mainkey" class="btn btn-sm btn-primary edit-item-btn" style="font-size:14px">
+        @(string.IsNullOrWhiteSpace(Model.Desc) ? "編輯" : Model.Desc )
+    </button>
+}
