@@ -1,0 +1,13 @@
+﻿@model SubscribePointEdit
+
+@{
+    var action = "add";
+    SRCLoginMeta meta = User.Identity.LoginMeta();
+}
+<input name="pid" type="hidden" value="@Model.pid" />
+
+<div class="mb-3" id="edit_div">
+    <label for="account-field" class="form-label">申購點名稱</label>
+    <input type="text" id="Account-field" name="name" maxlength="50" value="@Model.name"
+           class="form-control" placeholder="請輸入申購點名稱" required />
+</div>

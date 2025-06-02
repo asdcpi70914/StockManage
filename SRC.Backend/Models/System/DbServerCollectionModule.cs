@@ -5,6 +5,11 @@ using SRC.DB.Interfaces.Users;
 using SRC.DB.Responsibility.Authority;
 using SRC.DB.Responsibility.Settings;
 using SRC.DB.Responsibility.Users;
+using SRC.DB.Interfaces.Equipment;
+using SRC.DB.Responsibility.Equipment;
+using Microsoft.Extensions.DependencyInjection;
+using SRC.DB.Interfaces.SubscribePoint;
+using SRC.DB.Responsibility.SubscribePoint;
 
 namespace SRC.Backend.Models.System
 {
@@ -18,6 +23,9 @@ namespace SRC.Backend.Models.System
                 .AddTransient<IDF_Role, DF_Role>()
                 .AddTransient<IDF_SystemCode, DF_SystemCode>()
                 .AddTransient<IDF_Menu, DF_Menu>()
+                .AddTransient<IDF_Equipment, DF_Equipment>()
+                .AddTransient<IDF_Material, DF_Material>()
+                .AddTransient<IDF_SubscribePoint, DF_SubscribePoint>()
                 ;
             ;
         }

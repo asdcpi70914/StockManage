@@ -91,6 +91,18 @@
                  text: "您無權限",
                });
         }
+
+        function InitDateTimePicker(target) {
+            new flatpickr($(target), {
+                position: "below",
+                static: true,
+                "locale": "zh_tw",
+                dateFormat: "Y-m-d H:i",
+                time_24hr: true,
+                enableTime: true,
+                minuteIncrement: 30
+            });
+        }
     </script>
     <style>
         body {

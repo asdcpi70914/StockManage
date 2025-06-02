@@ -1,0 +1,34 @@
+﻿@model MaterialEdit
+@inject ISelectUI selectUI
+@inject IDF_BackendUser _Backend
+
+@{
+    var Units = _Backend.List_Backend_Unit().ToDictionary(x => x.code, x => x.name);
+    var action = "add";
+
+    SRCLoginMeta meta = User.Identity.LoginMeta();
+    var backendUsers = _Backend.AllBackendUser();
+    var superiorDic = backendUsers;
+}
+<input name="pid" type="hidden" value="@Model.pid" />
+
+<div class="mb-3" id="edit_div">
+    <label for="account-field" class="form-label">器材名稱</label>
+    <input type="text" id="Account-field" name="name" maxlength="50" value="@Model.name"
+           class="form-control" placeholder="請輸入器材名稱" required />
+</div>
+
+<div class="mb-3">
+    <label for="price" class="form-label">價格</label>
+    <input type="text" id="price" name="price" value="@Model.price" maxlength="10" placeholder="請輸入價格" class="form-control" required />
+</div>
+
+<div class="mb-3">
+    <label for="stock" class="form-label">庫存</label>
+    <input type="text" id="stock" name="stock" value="@Model.stock" maxlength="100" placeholder="請輸入庫存數量" class="form-control" required />
+</div>
+
+<script>
+
+</script>
+

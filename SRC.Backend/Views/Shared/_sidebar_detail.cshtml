@@ -20,32 +20,12 @@
                 </ul>
             </div>
         </li> <!-- end Dashboard Menu -->
-        //<li class="mm-active">
-        //    <a href="#" aria-expanded="true" aria-disabled="true">
-        //        <i class="@Model.icon"></i>
-        //        @Model.name
-        //        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
-        //    </a>
-        //    <ul class="">
-        //        @foreach (var each in Model.child)
-        //        {
-        //            <partial name="_siderbar" for="@each" />
-        //        }
-        //    </ul>
-        //</li>
     }
     else
     {
         <li class="nav-item">
             <a href="@Model.url" class="nav-link" target="@tagentView"><i class="@Model.icon"></i>@Model.name</a>
         </li>
-
-        //<li>
-        //    <a href="@Model.url" class="">
-        //        <i class="@Model.icon"></i>
-        //        @Model.name
-        //    </a>
-        //</li>
     }
 
 }

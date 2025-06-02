@@ -250,20 +250,6 @@ namespace SRC.Backend.Controllers.Authority
             return PartialAOE(lyAoe);
         }
 
-        //[HttpGet]
-        ////[FuncAlias(AliasName = "EDIT_FUNC")]
-        //public string RoleFuncs(int? rolePID)
-        //{
-        //    if (!rolePID.HasValue) return "[{}]";
-
-        //    RoleFunc roleFunc = new RoleFunc();
-
-        //    roleFunc.RolePID = rolePID.Value;
-        //    string result = _RoleDB.GetRoleFuncsJson(string.Empty, rolePID);
-        //    return result;
-        //}
-
-
         [HttpPost]
         public async Task<IActionResult> EDIT_FUNC(RoleFuncAdd roleEditFunc)
         {

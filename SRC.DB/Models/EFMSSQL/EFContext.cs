@@ -25,13 +25,19 @@ public partial class EFContext : DbContext
 
     public virtual DbSet<backend_users_role> backend_users_roles { get; set; }
 
+    public virtual DbSet<equipment_maintain> equipment_maintains { get; set; }
+
     public virtual DbSet<func> funcs { get; set; }
+
+    public virtual DbSet<material_maintain> material_maintains { get; set; }
 
     public virtual DbSet<role> roles { get; set; }
 
     public virtual DbSet<role_del> role_dels { get; set; }
 
     public virtual DbSet<role_func> role_funcs { get; set; }
+
+    public virtual DbSet<subscribepoint_maintain> subscribepoint_maintains { get; set; }
 
     public virtual DbSet<system_code> system_codes { get; set; }
 
@@ -182,6 +188,29 @@ public partial class EFContext : DbContext
                 .HasConstraintName("FK_backend_users_role_backend_users_role");
         });
 
+        modelBuilder.Entity<equipment_maintain>(entity =>
+        {
+            entity.HasKey(e => e.pid);
+
+            entity.ToTable("equipment_maintain");
+
+            entity.Property(e => e.create_time).HasColumnType("datetime");
+            entity.Property(e => e.creator)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.edit_time).HasColumnType("datetime");
+            entity.Property(e => e.editor)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.name)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.price).HasColumnType("decimal(18, 0)");
+            entity.Property(e => e.state)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<func>(entity =>
         {
             entity.HasKey(e => e.pid).HasName("PK_dbo.Func");
@@ -205,6 +234,29 @@ public partial class EFContext : DbContext
                 .HasMaxLength(15)
                 .IsUnicode(false);
             entity.Property(e => e.url).HasMaxLength(400);
+        });
+
+        modelBuilder.Entity<material_maintain>(entity =>
+        {
+            entity.HasKey(e => e.pid);
+
+            entity.ToTable("material_maintain");
+
+            entity.Property(e => e.create_time).HasColumnType("datetime");
+            entity.Property(e => e.creator)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.edit_time).HasColumnType("datetime");
+            entity.Property(e => e.editor)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.name)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.price).HasColumnType("decimal(18, 0)");
+            entity.Property(e => e.state)
+                .HasMaxLength(50)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<role>(entity =>
@@ -252,6 +304,25 @@ public partial class EFContext : DbContext
             entity.HasKey(e => e.pid).HasName("PK_dbo.Role_Func");
 
             entity.ToTable("role_func", tb => tb.HasComment("功能權限"));
+        });
+
+        modelBuilder.Entity<subscribepoint_maintain>(entity =>
+        {
+            entity.HasKey(e => e.pid);
+
+            entity.ToTable("subscribepoint_maintain");
+
+            entity.Property(e => e.create_time).HasColumnType("datetime");
+            entity.Property(e => e.creator)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.edit_time).HasColumnType("datetime");
+            entity.Property(e => e.editor)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.name)
+                .HasMaxLength(50)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<system_code>(entity =>

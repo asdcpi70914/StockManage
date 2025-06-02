@@ -50,11 +50,12 @@
             public const string Fail_Upload = "上傳失敗";
             public const string Fail_Stop = "暫停失敗";
             public const string Fail_Start = "啟動失敗";
+            public const string Fail_Abandon = "作廢失敗";
 
             public const string Success_Add = "新增成功";
             public const string Success_Edit = "修改成功";
             public const string Success_Delete = "刪除成功";
-            public const string Success_Abandon = "廢棄成功";
+            public const string Success_Abandon = "作廢成功";
             public const string Success_Finish = "結案成功";
             public const string Success_Delivery = "出貨成功";
             public const string Success_Cancel = "取消成功";
