@@ -6,28 +6,33 @@ using System.Threading.Tasks;
 
 namespace SRC.DB.HardCodes
 {
-    public class EQUIPMENT_STATE: ISRCState<EQUIPMENT_STATE.STATE>
+    public class MINBASESTOCK_TYPE: ISRCState<MINBASESTOCK_TYPE.STATE>
     {
         public enum STATE
         {
-            ENABLE = 0,
-            INVALID = 99,
+            EQUIPMENT= 0,
+            MATERIAL = 1,
         }
 
-        public const string DESC_ENABLE = "啟用";
-        public const string DESC_INVALID = "作廢";
+        public const string DESC_EQUIPMENT = "裝備";
+        public const string DESC_MATERIAL = "器材";
 
         public STATE Code { get; set; }
         public string Desc { get; set; }
 
-        public EQUIPMENT_STATE(STATE code)
+        public MINBASESTOCK_TYPE(STATE code)
         {
             Init(code);
         }
 
-        public EQUIPMENT_STATE(string state)
+        public MINBASESTOCK_TYPE(string state)
         {
             Init(state);
+        }
+
+        public MINBASESTOCK_TYPE()
+        {
+
         }
 
         private void Init(STATE code)
@@ -35,11 +40,11 @@ namespace SRC.DB.HardCodes
             Code = code;
             switch (Code)
             {
-                case STATE.ENABLE:
-                    Desc = DESC_ENABLE;
+                case STATE.EQUIPMENT:
+                    Desc = DESC_EQUIPMENT;
                     break;
-                case STATE.INVALID:
-                    Desc = DESC_INVALID;
+                case STATE.MATERIAL:
+                    Desc = DESC_MATERIAL;
                     break;
                 default:
                     throw new ArgumentException();
@@ -60,7 +65,7 @@ namespace SRC.DB.HardCodes
 
         public override string GetDesc(STATE state)
         {
-            return new EQUIPMENT_STATE(state).Desc;
+            return new MINBASESTOCK_TYPE(state).Desc;
         }
     }
 }

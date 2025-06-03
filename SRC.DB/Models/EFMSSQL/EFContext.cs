@@ -31,6 +31,8 @@ public partial class EFContext : DbContext
 
     public virtual DbSet<material_maintain> material_maintains { get; set; }
 
+    public virtual DbSet<min_base_stock_subscribe_setting> min_base_stock_subscribe_settings { get; set; }
+
     public virtual DbSet<role> roles { get; set; }
 
     public virtual DbSet<role_del> role_dels { get; set; }
@@ -116,7 +118,7 @@ public partial class EFContext : DbContext
             entity.Property(e => e.password_hash).HasMaxLength(256);
             entity.Property(e => e.phone_number).HasMaxLength(30);
             entity.Property(e => e.unit)
-                .HasMaxLength(5)
+                .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.verification_code)
                 .HasMaxLength(10)
@@ -255,6 +257,26 @@ public partial class EFContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.price).HasColumnType("decimal(18, 0)");
             entity.Property(e => e.state)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<min_base_stock_subscribe_setting>(entity =>
+        {
+            entity.HasKey(e => e.pid);
+
+            entity.ToTable("min_base_stock_subscribe_setting");
+
+            entity.Property(e => e.create_time).HasColumnType("datetime");
+            entity.Property(e => e.creator)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.edit_time).HasColumnType("datetime");
+            entity.Property(e => e.editor)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.sub_pid).HasComment("器材或是裝備pid");
+            entity.Property(e => e.type)
                 .HasMaxLength(50)
                 .IsUnicode(false);
         });

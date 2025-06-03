@@ -10,6 +10,8 @@ using SRC.DB.Responsibility.Equipment;
 using Microsoft.Extensions.DependencyInjection;
 using SRC.DB.Interfaces.SubscribePoint;
 using SRC.DB.Responsibility.SubscribePoint;
+using SRC.DB.Responsibility.MinBaseStock;
+using SRC.DB.Interfaces.MinBaseStock;
 
 namespace SRC.Backend.Models.System
 {
@@ -26,6 +28,7 @@ namespace SRC.Backend.Models.System
                 .AddTransient<IDF_Equipment, DF_Equipment>()
                 .AddTransient<IDF_Material, DF_Material>()
                 .AddTransient<IDF_SubscribePoint, DF_SubscribePoint>()
+                .AddTransient<IDF_MinBaseStock, DF_MinBaseStock>()
                 ;
             ;
         }

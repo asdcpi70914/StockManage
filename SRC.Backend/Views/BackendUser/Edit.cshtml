@@ -1,6 +1,7 @@
 ﻿@model BackendUserEdit
 @inject ISelectUI selectUI
 @inject IDF_BackendUser _Backend
+@inject IDF_SystemCode DF_SystemCode
 
 @{
     var Units = _Backend.List_Backend_Unit().ToDictionary(x => x.code, x => x.name);
@@ -16,6 +17,7 @@
         action = "edit";
     }
 
+    var ListUnit = DF_SystemCode.List_SystemCode("UNIT");
 }
                         <input name="UserId" type="hidden" value="@Model.UserId" />
 
@@ -53,6 +55,22 @@
                             required />
                         </div>
 
+                        <div class="mb-3">
+                            <label for="PhoneNumber-field" class="form-label">單位</label>
+                            <select id="unit" name="unit" class="form-control">
+                                @foreach(var each in ListUnit){
+                                    if(each.data == Model.Unit)
+                                    {
+                                        <option value="@each.data" selected>@each.description</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@each.data">@each.description</option>
+                                    }
+                                    
+                                }
+                            </select>
+                        </div>
 <div>
                             <label for="Enabled-field" class="form-label">帳號狀態</label>
                             <select class="form-control" data-trigger id="Enabled-field" name="Enabled">

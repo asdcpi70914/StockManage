@@ -6,28 +6,35 @@ using System.Threading.Tasks;
 
 namespace SRC.DB.HardCodes
 {
-    public class EQUIPMENT_STATE: ISRCState<EQUIPMENT_STATE.STATE>
+    public class REVIEW_STATE : ISRCState<REVIEW_STATE.STATE>
     {
         public enum STATE
         {
-            ENABLE = 0,
-            INVALID = 99,
+            INIT = 0,
+            REVIEW_OK = 1,
+            CANCEL = 3
         }
 
-        public const string DESC_ENABLE = "啟用";
-        public const string DESC_INVALID = "作廢";
+        public const string DESC_INIT = "申請中";
+        public const string DESC_REVIEW_OK = "審核通過";
+        public const string DESC_CANCEL = "撤銷";
 
         public STATE Code { get; set; }
         public string Desc { get; set; }
 
-        public EQUIPMENT_STATE(STATE code)
+        public REVIEW_STATE(STATE code)
         {
             Init(code);
         }
 
-        public EQUIPMENT_STATE(string state)
+        public REVIEW_STATE(string state)
         {
             Init(state);
+        }
+
+        public REVIEW_STATE()
+        {
+
         }
 
         private void Init(STATE code)
@@ -35,11 +42,14 @@ namespace SRC.DB.HardCodes
             Code = code;
             switch (Code)
             {
-                case STATE.ENABLE:
-                    Desc = DESC_ENABLE;
+                case STATE.INIT:
+                    Desc = DESC_INIT;
                     break;
-                case STATE.INVALID:
-                    Desc = DESC_INVALID;
+                case STATE.REVIEW_OK:
+                    Desc = DESC_REVIEW_OK;
+                    break;
+                case STATE.CANCEL:
+                    Desc = DESC_CANCEL;
                     break;
                 default:
                     throw new ArgumentException();
@@ -60,7 +70,8 @@ namespace SRC.DB.HardCodes
 
         public override string GetDesc(STATE state)
         {
-            return new EQUIPMENT_STATE(state).Desc;
+            return new REVIEW_STATE(state).Desc;
         }
     }
+
 }

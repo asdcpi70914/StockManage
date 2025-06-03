@@ -1,0 +1,115 @@
+﻿@model MinBaseStockEdit
+@inject IDF_SubscribePoint DF_SubscribePoint
+@inject IDF_MinBaseStock DF_MinBaseStock
+@{
+    var action = "add";
+
+    if (Model.Action == ActionMode.EDIT)
+    {
+        action = "edit";
+    }
+
+
+    SRCLoginMeta meta = User.Identity.LoginMeta();
+    var DropDownSelect = new MINBASESTOCK_TYPE().All();
+
+    var subscribepointDic = DF_SubscribePoint.SubscribepointDic();
+
+    Dictionary<long, string> SubPidList = new Dictionary<long, string>();
+    if(Model.Action == ActionMode.EDIT)
+    {
+        SubPidList = DF_MinBaseStock.MinBaseStockSubscribeSettingDropDown(Model.type);
+    }
+}
+<input name="pid" type="hidden" value="@Model.pid" />
+
+<div class="mb-3" id="edit_div">
+    <label for="account-field" class="form-label">類別</label>
+    <select id="type" name="type" class="form-control" onchange="ChangeTypeAoe(this,'@action')">
+        <option></option>
+        @foreach (var each in DropDownSelect)
+        {
+            if(Model.type == each.Key)
+            {
+                <option value="@each.Key" selected>@each.Value</option>
+            }
+            else
+            {
+                <option value="@each.Key">@each.Value</option>
+            }
+        }
+    </select>
+</div>
+
+<div class="mb-3">
+    <label for="sub_pid" class="form-label">裝備或器材</label>
+    @if(Model.Action == ActionMode.ADD)
+    {
+        <select id="sub_pid_@action" name="sub_pid" class="form-control">
+        </select>
+    }
+    else
+    {
+        <select id="sub_pid_@action" name="sub_pid" class="form-control">
+            <option></option>
+            @foreach (var each in SubPidList)
+            {
+                if (Model.sub_pid == each.Key)
+                {
+                    <option value="@each.Key" selected>@each.Value</option>
+                }
+                else
+                {
+                    <option value="@each.Key">@each.Value</option>
+                }
+            }
+        </select>
+    }
+    
+</div>
+
+<div class="mb-3">
+    <label for="subscribepoint_pid" class="form-label">申購點</label>
+    <select id="subscribepoint_pid" name="subscribepoint_pid" class="form-control">
+        <option></option>
+        @foreach (var each in subscribepointDic)
+        {
+            if(Model.subscribepoint_pid == each.Key)
+            {
+                <option value="@each.Key" selected>@each.Value</option>
+            }
+            else
+            {
+                <option value="@each.Key">@each.Value</option>
+            }
+        }
+    </select>
+</div>
+
+<div class="mb-3">
+    <label for="min_base_stock" class="form-label">最低基準存量</label>
+    <input type="text" id="min_base_stock" name="min_base_stock" class="form-control" value="@Model.min_base_stock"/>
+</div>
+
+<script>
+    function ChangeTypeAoe(thi,action) {
+        $.ajax({
+            url: "@Url.Action("ChangeType", "MinBaseStock")",
+            data: { "type": $(thi).val() },
+            dataType: "json",
+            type: "POST",
+            beforeSend: function () { _srcvalley_pg_loading(); },
+            complete: function () { _srcvalley_pg_loading_stop(); },
+            success: function (result) {
+                console.log(action);
+                $("#sub_pid_" + action).html("");
+                var option = "<option></option>"
+                for (var each in result) {
+                    option += "<option value='" + each + "'>" + result[each] + "</option>"
+                }
+
+                $("#sub_pid_" + action).append(option);
+            }
+        });
+    }
+</script>

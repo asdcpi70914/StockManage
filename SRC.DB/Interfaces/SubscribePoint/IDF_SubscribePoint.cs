@@ -15,5 +15,6 @@ namespace SRC.DB.Interfaces.SubscribePoint
         Task Edit(subscribepoint_maintain data);
         bool CheckSameName(long? pid, string name);
         Task Delete(List<long> pids);
+        Dictionary<long, string> SubscribepointDic();
     }
 }

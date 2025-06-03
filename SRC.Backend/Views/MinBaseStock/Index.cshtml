@@ -1,0 +1,176 @@
+﻿@model MinBaseStockIndex
+@inject SysAppsetting Setting
+
+@{
+    int take = Setting.PaginationTake;
+
+    string controller = "MinBaseStock";
+    string searchAction = "Search";
+
+    SRCTools search = new SRCTools()
+            {
+                id = "btn-search",
+                AuthorityUrl = @Url.Action(searchAction, controller)
+            };
+    var DropDownSelect = new MINBASESTOCK_TYPE().All();
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">查詢條件</h4>
+                <div class="flex-shrink-0">
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#search-div">收合</button>
+                    <div class="form-check form-switch form-switch-right form-switch-md">
+                        <partial name="Component/_src_btn_search" for="@search)" />
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="search_form">
+                    <div class="collapse show" id="search-div">
+                        <div class="row gy-4">
+                            <div class="col-xxl-2 col-md-2">
+                                <div>
+                                    <label for="type" class="form-label">類別</label>
+                                    <select id="type" name="type" class="form-control" onchange="ChangeType(this)">
+                                        <option></option>
+                                        @foreach (var each in DropDownSelect)
+                                        {
+                                            <option value="@each.Key">@each.Value</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-xxl-2 col-md-2">
+                                <div>
+                                    <label for="sub_pid" class="form-label">裝備或器材</label>
+                                    <select id="sub_pid" name="sub_pid" class="form-control"></select>
+                                </div>
+                            </div>
+
+                            <div class="col-xxl-2 col-md-2">
+                                <div>
+                                    <label for="subscribepoint_pid" class="form-label">申購點</label>
+                                    <select id="subscribepoint_pid" name="subscribepoint_pid" class="form-control">
+                                        <option></option>
+                                        @foreach (var each in Model.subscribepointDic)
+                                        {
+                                            <option value="@each.Key">@each.Value</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-xxl-2 col-md-2">
+                                <div>
+                                    <label for="start_time" class="form-label">建立時間(起)</label>
+                                    <input type="date" class="form-control form-control" id="start_time" name="start_time">
+                                </div>
+                            </div>
+
+                            <div class="col-xxl-2 col-md-2">
+                                <div>
+                                    <label for="end_time" class="form-label">建立時間(訖)</label>
+                                    <input type="date" class="form-control form-control" id="end_time" name="end_time">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="index_list_div">
+    <partial name="Search" model="Model.SearchResultPage" />
+</div>
+
+
+
+@section scripts
+{
+    <script>
+        $(document).ready(init);
+
+        function init() {
+            init_btn();
+        }
+
+        function _srcvalley_ly_pagination_search(e) {
+
+            //console.log(e);
+
+            $("#index_list_div").html("");
+            $.ajax({
+                url: "@Url.Action(searchAction, controller)",
+                data: $("#search_form").serialize() + "&page=" + e.page + "&take=" + e.take + "&action=" + e.action,
+                dataType: "html",
+                type: "POST",
+                beforeSend: function () { _srcvalley_pg_loading(); },
+                complete: function () { _srcvalley_pg_loading_stop(); },
+                success: function (pg) {
+                    $("#index_list_div").html(pg);
+                }
+            });
+        }
+
+        function _src_deletely_success_back() {
+            $("#btn-search").click();
+        }
+
+        function _src_aoely_success_back() {
+            $("#btn-search").click();
+        }
+
+        function _srcvalley_pg_message_fail(targetid) {
+            if (targetid != "") {
+                _src_aoeLy_Show(targetid);
+            }
+        }
+
+        function init_btn() {
+            $("#btn-search").on('click', function () {
+                var take = @take;
+                if (typeof _srcvalley_ly_pagination_take == 'function') {
+                    take = _srcvalley_ly_pagination_take('');
+                    if (take == '') {
+                        take = take;
+                    }
+                }
+                let obj = {
+                    page: 1,
+                    take: take,
+                    action: "now",
+                    id: ""
+                }
+                _srcvalley_ly_pagination_search(obj);
+            });
+        }
+
+        function ChangeType(thi) {
+            $.ajax({
+                url: "@Url.Action("ChangeType", controller)",
+                data: {"type":$(thi).val()},
+                dataType: "json",
+                type: "POST",
+                beforeSend: function () { _srcvalley_pg_loading(); },
+                complete: function () { _srcvalley_pg_loading_stop(); },
+                success: function (result) {
+                    $("#sub_pid").html("");
+                    var option = "<option></option>"
+                    for(var each in result){
+                        option += "<option value='" + each + "'>" + result[each] + "</option>"
+                    }
+
+                    $("#sub_pid").append(option);
+                }
+            });
+        }
+
+    </script>
+
+}

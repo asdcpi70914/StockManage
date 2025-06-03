@@ -88,5 +88,9 @@ namespace SRC.DB.Responsibility.SubscribePoint
             await DB.SaveChangesAsync();
         }
 
+        public Dictionary<long, string> SubscribepointDic()
+        {
+            return DB.subscribepoint_maintains.AsNoTracking().ToDictionary(x => x.pid, x => x.name);
+        }
     }
 }
