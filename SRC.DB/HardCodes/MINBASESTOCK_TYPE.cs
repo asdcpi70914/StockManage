@@ -23,11 +23,13 @@ namespace SRC.DB.HardCodes
         public MINBASESTOCK_TYPE(STATE code)
         {
             Init(code);
+            InitDesc();
         }
 
         public MINBASESTOCK_TYPE(string state)
         {
             Init(state);
+            InitDesc();
         }
 
         public MINBASESTOCK_TYPE()
@@ -35,9 +37,8 @@ namespace SRC.DB.HardCodes
 
         }
 
-        private void Init(STATE code)
+        private void InitDesc()
         {
-            Code = code;
             switch (Code)
             {
                 case STATE.EQUIPMENT:
@@ -49,6 +50,11 @@ namespace SRC.DB.HardCodes
                 default:
                     throw new ArgumentException();
             }
+        }
+
+        private void Init(STATE state)
+        {
+            Code = state;
         }
 
         private void Init(string state)

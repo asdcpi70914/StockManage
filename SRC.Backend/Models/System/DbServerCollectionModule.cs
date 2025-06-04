@@ -12,6 +12,12 @@ using SRC.DB.Interfaces.SubscribePoint;
 using SRC.DB.Responsibility.SubscribePoint;
 using SRC.DB.Responsibility.MinBaseStock;
 using SRC.DB.Interfaces.MinBaseStock;
+using SRC.DB.Interfaces.UnitApply;
+using SRC.DB.Responsibility.UnitApply;
+using SRC.DB.Interfaces.Distribute;
+using SRC.DB.Responsibility.Distribute;
+using SRC.DB.Interfaces.SupplyRoomApply;
+using SRC.DB.Responsibility.SupplyRoomApply;
 
 namespace SRC.Backend.Models.System
 {
@@ -29,6 +35,9 @@ namespace SRC.Backend.Models.System
                 .AddTransient<IDF_Material, DF_Material>()
                 .AddTransient<IDF_SubscribePoint, DF_SubscribePoint>()
                 .AddTransient<IDF_MinBaseStock, DF_MinBaseStock>()
+                .AddTransient<IDF_UnitApply, DF_UnitApply>()
+                .AddTransient<IDF_Distribute, DF_Distribute>()
+                .AddTransient<IDF_SupplyRoomApply, DF_SupplyRoomApply>()
                 ;
             ;
         }

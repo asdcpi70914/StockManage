@@ -1,0 +1,150 @@
+﻿@model UnitApplyEdit
+@inject IDF_MinBaseStock DF_MinBaseStock
+@inject IDF_UnitApply DF_UnitApply
+@{
+    var action = "add";
+    Dictionary<long, string> SettingList = new Dictionary<long, string>();
+    List<UnitApplyReviewLogComplex> ReviewLogs = new List<UnitApplyReviewLogComplex>();
+
+    if (Model.Action == ActionMode.EDIT)
+    {
+        action = "edit";
+
+        SettingList = DF_UnitApply.DicMinBaseStoc(Model.type);
+
+        ReviewLogs = DF_UnitApply.ListReviewLogs(Model.pid);
+    }
+
+    
+
+
+    var DropDownSelect = new MINBASESTOCK_TYPE().All();
+}
+<input name="pid" type="hidden" value="@Model.pid" />
+
+<div class="mb-3" id="edit_div">
+    <label for="account-field" class="form-label mustKeyin">類別</label>
+    <select id="type_@action" name="type" class="form-control" onchange="ChangeTypeAoe(this,'@action')">
+        <option></option>
+        @foreach (var each in DropDownSelect)
+        {
+            if (Model.type == each.Key)
+            {
+                <option value="@each.Key" selected>@each.Value</option>
+            }
+            else
+            {
+                <option value="@each.Key">@each.Value</option>
+            }
+        }
+    </select>
+</div>
+
+<div class="mb-3" id="edit_div">
+    <label for="setting_pid" class="form-label mustKeyin">裝備或器材申請</label>
+    @if(Model.Action == ActionMode.EDIT)
+    {
+        <select id="setting_pid_@action" name="setting_pid" class="form-control" onchange="GetRemainingStock(this,'@action')">
+            <option></option>
+            @foreach (var each in SettingList)
+            {
+                if(Model.setting_pid == each.Key)
+                {
+                    <option value="@each.Key" selected>@each.Value</option>
+                }
+                else
+                {
+                    <option value="@each.Key">@each.Value</option>
+                }
+                
+            }
+        </select>
+    }
+    else
+    {
+        <select id="setting_pid_@action" name="setting_pid" class="form-control" onchange="GetRemainingStock(this,'@action')">
+            <option></option>
+        </select>
+    }
+
+</div>
+
+<div class="mb-3" id="edit_div">
+    <label for="RemainingStock" class="form-label mustKeyin">剩餘存量</label>
+    <input type="text" class="form-control" id="RemainingStock_@action" value="@Model.RemainingStock" readonly/>
+</div>
+
+<div class="mb-3">
+    <label for="apply_amount" class="form-label mustKeyin">申請數量</label>
+    <input type="text" id="apply_amount" name="apply_amount" value="@Model.apply_amount" maxlength="100" placeholder="請輸入申請數量" class="form-control" required />
+</div>
+
+<div class="card border">
+    <div class="card-header">
+        <h6 class="card-title mb-0">審核歷程</h6>
+    </div>
+    <div class="card-body">
+        <table class="table table-sm dt-responsive align-middle table-hover">
+            <thead class="table-light">
+                <tr style="white-space:nowrap">
+                    <th>裝備/器材</th>
+                    <th>審核狀態</th>
+                    <th>退回原因</th>
+                    <th>審核日期</th>
+                    <th>審核人員</th>
+                </tr>
+            </thead>
+            <tbody class="list form-check-all">
+
+                    @foreach (var item in ReviewLogs)
+                    {
+                        <tr>
+                            <td>@item.sub_name</td>
+                            <td>@item.new_state</td>
+                            <td>@item.memo</td>
+                            <td>@item.review_time.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            <td>@item.review_name</td>
+                        </tr>
+                    }
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<script>
+    function ChangeTypeAoe(thi, action) {
+        $.ajax({
+            url: "@Url.Action("ChangeType", "UnitApply")",
+            data: { "type": $(thi).val() },
+            dataType: "json",
+            type: "POST",
+            beforeSend: function () { _srcvalley_pg_loading(); },
+            complete: function () { _srcvalley_pg_loading_stop(); },
+            success: function (result) {
+                $("#setting_pid_" + action).html("");
+                var option = "<option></option>"
+                for (var each in result) {
+                    option += "<option value='" + each + "'>" + result[each] + "</option>"
+                }
+
+                $("#setting_pid_" + action).append(option);
+            }
+        });
+    }
+
+    function GetRemainingStock(thi, action) {
+        $.ajax({
+            url: "@Url.Action("GetRemainingStock", "UnitApply")",
+            data: { "type": $("#type_" + action).val(),"pid":$(thi).val() },
+            dataType: "json",
+            type: "POST",
+            beforeSend: function () { _srcvalley_pg_loading(); },
+            complete: function () { _srcvalley_pg_loading_stop(); },
+            success: function (result) {
+                $("#RemainingStock_" + action).val(result);
+            }
+        });
+    }
+</script>

@@ -24,7 +24,7 @@
 <input name="pid" type="hidden" value="@Model.pid" />
 
 <div class="mb-3" id="edit_div">
-    <label for="account-field" class="form-label">類別</label>
+    <label for="account-field" class="form-label mustkeyin">類別</label>
     <select id="type" name="type" class="form-control" onchange="ChangeTypeAoe(this,'@action')">
         <option></option>
         @foreach (var each in DropDownSelect)
@@ -42,7 +42,7 @@
 </div>
 
 <div class="mb-3">
-    <label for="sub_pid" class="form-label">裝備或器材</label>
+    <label for="sub_pid" class="form-label mustkeyin">裝備或器材</label>
     @if(Model.Action == ActionMode.ADD)
     {
         <select id="sub_pid_@action" name="sub_pid" class="form-control">
@@ -69,7 +69,7 @@
 </div>
 
 <div class="mb-3">
-    <label for="subscribepoint_pid" class="form-label">申購點</label>
+    <label for="subscribepoint_pid" class="form-label mustkeyin">申購點</label>
     <select id="subscribepoint_pid" name="subscribepoint_pid" class="form-control">
         <option></option>
         @foreach (var each in subscribepointDic)
@@ -87,7 +87,7 @@
 </div>
 
 <div class="mb-3">
-    <label for="min_base_stock" class="form-label">最低基準存量</label>
+    <label for="min_base_stock" class="form-label mustkeyin">最低基準存量</label>
     <input type="text" id="min_base_stock" name="min_base_stock" class="form-control" value="@Model.min_base_stock"/>
 </div>
 

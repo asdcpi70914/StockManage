@@ -8,7 +8,5 @@ namespace SRC.Backend.Models.Pages.MinBaseStock
     {
         public List<MinBaseStockComplex> Data { get; set; }
         public SRCUIPagination Pagination { get; set; }
-
-        public Dictionary<long, string> subscribepointDic { get; set; }
     }
 }

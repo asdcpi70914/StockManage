@@ -1,0 +1,139 @@
+﻿@model EquipmentApplyEdit
+@inject IDF_MinBaseStock DF_MinBaseStock
+@inject IDF_UnitApply DF_UnitApply
+@{
+    var action = "add";
+    List<UnitApplyReviewLogComplex> ReviewLogs = new List<UnitApplyReviewLogComplex>();
+    if (Model.Action == ActionMode.EDIT)
+    {
+        action = "edit";
+
+        ReviewLogs = DF_UnitApply.ListReviewLogs(Model.pid);
+    }
+
+    List<string> Review_States = new List<string>()
+    {
+        UNITAPPLY_STATE.STATE.REVIEW_FAIL.ToString(),
+        UNITAPPLY_STATE.STATE.REVIEW_OK.ToString(),
+    };
+
+    var DropDownSelect = new MINBASESTOCK_TYPE().All();
+    var ReviewStateList = new UNITAPPLY_STATE().All().Where(x => Review_States.Contains(x.Key)).ToDictionary();
+}
+<input name="pid" type="hidden" value="@Model.pid" />
+
+<div class="mb-3" id="edit_div">
+    <label for="account-field" class="form-label mustkeyin">類別</label>
+    <input type="text" value="@(new MINBASESTOCK_TYPE(Model.type).Desc)" class="form-control" readonly style="background-color:gainsboro" />
+</div>
+
+<div class="mb-3" id="edit_div">
+    <label for="sub_name" class="form-label mustkeyin">裝備或器材申請</label>
+    <input type="text" value="@Model.sub_name" class="form-control" readonly style="background-color:gainsboro" />
+</div>
+
+@* <div class="mb-3" id="edit_div">
+    <label for="subscribepoint" class="form-label mustkeyin">申購點</label>
+    <input type="text" value="@Model.subscribepoint" class="form-control" readonly style="background-color:gainsboro" />
+</div> *@
+
+<div class="mb-3" id="edit_div">
+    <label for="RemainingStock" class="form-label mustkeyin">剩餘存量</label>
+    <input type="text" class="form-control" id="RemainingStock" value="@Model.RemainingStock" readonly style="background-color:gainsboro" />
+</div>
+
+<div class="mb-3">
+    <label for="apply_amount" class="form-label mustkeyin">申請數量</label>
+    <input type="text" id="apply_amount" name="apply_amount" value="@Model.apply_amount" style="background-color:gainsboro" class="form-control" readonly />
+</div>
+
+<div class="card border">
+    <div class="card-header">
+        <h6 class="card-title mb-0">審核歷程</h6>
+    </div>
+    <div class="card-body">
+        <table class="table table-sm dt-responsive align-middle table-hover">
+            <thead class="table-light">
+                <tr style="white-space:nowrap">
+                    <th>裝備/器材</th>
+                    <th>審核狀態</th>
+                    <th>退回原因</th>
+                    <th>審核日期</th>
+                    <th>審核人員</th>
+                </tr>
+            </thead>
+            <tbody class="list form-check-all">
+
+                @foreach (var item in ReviewLogs)
+                {
+                    <tr>
+                        <td>@item.sub_name</td>
+                        <td>@item.new_state</td>
+                        <td>@item.memo</td>
+                        <td>@item.review_time.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        <td>@item.review_name</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="row">
+        <div class="col-4">
+            <label for="state" class="form-label mustKeyin">審核狀態</label>
+            <select class="form-control" id="state" name="state" onchange="ShowReviewMemo(this)">
+                @foreach (var each in ReviewStateList)
+                {
+                    <option value="@each.Key">@each.Value</option>
+                }
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="mb-3 d-none" id="review_reason_div">
+    <div class="row">
+        <div class="col-12">
+            <label for="memo" class="form-label mustKeyin">退回原因</label>
+            <input type="text" class="form-control" id="memo" name="memo" value="" maxlength="1024" />
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function ChangeTypeAoe(thi, action) {
+        $.ajax({
+            url: "@Url.Action("ChangeType", "UnitApply")",
+            data: { "type": $(thi).val() },
+            dataType: "json",
+            type: "POST",
+            beforeSend: function () { _srcvalley_pg_loading(); },
+            complete: function () { _srcvalley_pg_loading_stop(); },
+            success: function (result) {
+                $("#setting_pid_" + action).html("");
+                var option = "<option></option>"
+                for (var each in result) {
+                    option += "<option value='" + each + "'>" + result[each] + "</option>"
+                }
+
+                $("#setting_pid_" + action).append(option);
+            }
+        });
+    }
+
+    function ShowReviewMemo(thi) {
+        var select = $(thi).val();
+
+        if (select == "@UNITAPPLY_STATE.STATE.REVIEW_OK.ToString()") {
+            $("#review_reason_div").addClass("d-none");
+            $("#review_reason").val("");
+        }
+        else {
+            $("#review_reason_div").removeClass("d-none");
+        }
+    }
+</script>

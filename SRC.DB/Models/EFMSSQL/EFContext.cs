@@ -43,6 +43,9 @@ public partial class EFContext : DbContext
 
     public virtual DbSet<system_code> system_codes { get; set; }
 
+    public virtual DbSet<unit_apply> unit_applies { get; set; }
+
+    public virtual DbSet<unit_apply_review_log> unit_apply_review_logs { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<backend_dept>(entity =>
@@ -359,6 +362,54 @@ public partial class EFContext : DbContext
             entity.Property(e => e.data).HasMaxLength(128);
             entity.Property(e => e.description).HasMaxLength(128);
             entity.Property(e => e.sub_description).HasMaxLength(128);
+        });
+
+        modelBuilder.Entity<unit_apply>(entity =>
+        {
+            entity.HasKey(e => e.pid);
+
+            entity.ToTable("unit_apply");
+
+            entity.Property(e => e.create_time).HasColumnType("datetime");
+            entity.Property(e => e.creator)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.edit_time).HasColumnType("datetime");
+            entity.Property(e => e.editor)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.state)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.unit)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<unit_apply_review_log>(entity =>
+        {
+            entity.HasKey(e => e.pid);
+
+            entity.ToTable("unit_apply_review_log");
+
+            entity.Property(e => e.create_time).HasColumnType("datetime");
+            entity.Property(e => e.creator)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.memo)
+                .HasMaxLength(1024)
+                .IsUnicode(false);
+            entity.Property(e => e.new_state)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.ori_state)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.unit_apply_p).WithMany(p => p.unit_apply_review_logs)
+                .HasForeignKey(d => d.unit_apply_pid)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_unit_apply_review_log_unit_apply");
         });
 
         OnModelCreatingPartial(modelBuilder);

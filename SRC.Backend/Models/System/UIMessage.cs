@@ -44,13 +44,14 @@
             public const string Fail_Edit = "修改失敗";
             public const string Fail_Add = "新增失敗";
             public const string Fail_Delete = "刪除失敗";
-            public const string Fail_Cancel = "取消失敗";
+            public const string Fail_Cancel = "撤銷失敗";
             public const string Fail_Assign = "指派失敗";
             public const string Fail_Review = "審核失敗";
             public const string Fail_Upload = "上傳失敗";
             public const string Fail_Stop = "暫停失敗";
             public const string Fail_Start = "啟動失敗";
             public const string Fail_Abandon = "作廢失敗";
+            public const string Fail_Distribute = "撥發失敗";
 
             public const string Success_Add = "新增成功";
             public const string Success_Edit = "修改成功";
@@ -58,7 +59,7 @@
             public const string Success_Abandon = "作廢成功";
             public const string Success_Finish = "結案成功";
             public const string Success_Delivery = "出貨成功";
-            public const string Success_Cancel = "取消成功";
+            public const string Success_Cancel = "撤銷成功";
             public const string Success_Stop = "暫停成功";
             public const string Success_Start = "啟動成功";
             public const string Success_Generate = "建立成功";
@@ -66,6 +67,7 @@
             public const string Success_Assign = "指派成功";
             public const string Success_Upload = "上傳成功";
             public const string Success_Complete = "專案已完工";
+            public const string Success_Distribute = "撥發成功";
             public static readonly string Fail_Search = "查詢資料出現異常";
 
             public const string AccountNotExist = "帳號不存在";
