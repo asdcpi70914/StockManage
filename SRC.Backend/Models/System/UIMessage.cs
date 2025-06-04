@@ -52,6 +52,7 @@
             public const string Fail_Start = "啟動失敗";
             public const string Fail_Abandon = "作廢失敗";
             public const string Fail_Distribute = "撥發失敗";
+            public const string Fail_Delivery = "出貨失敗";
 
             public const string Success_Add = "新增成功";
             public const string Success_Edit = "修改成功";

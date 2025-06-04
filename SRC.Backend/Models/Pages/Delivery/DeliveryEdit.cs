@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SRC.Backend.Models.System;
 
-namespace SRC.DB.Models.Complex
+namespace SRC.Backend.Models.Pages.Delivery
 {
-    public class UnitApplyComplex
+    public class DeliveryEdit
     {
+        public ActionMode Action { get; set; }
         public long pid { get; set; }
         public string subscribepoint { get; set; }
 
@@ -26,7 +23,5 @@ namespace SRC.DB.Models.Complex
         public DateTime create_time { get; set; }
 
         public int RemainingStock { get; set; }
-
-        public string Apply_Name { get; set; }
     }
 }

@@ -18,6 +18,8 @@ using SRC.DB.Interfaces.Distribute;
 using SRC.DB.Responsibility.Distribute;
 using SRC.DB.Interfaces.SupplyRoomApply;
 using SRC.DB.Responsibility.SupplyRoomApply;
+using SRC.DB.Interfaces.Delivery;
+using SRC.DB.Responsibility.Delivery;
 
 namespace SRC.Backend.Models.System
 {
@@ -38,6 +40,7 @@ namespace SRC.Backend.Models.System
                 .AddTransient<IDF_UnitApply, DF_UnitApply>()
                 .AddTransient<IDF_Distribute, DF_Distribute>()
                 .AddTransient<IDF_SupplyRoomApply, DF_SupplyRoomApply>()
+                .AddTransient<IDF_Delivery, DF_Delivery>()
                 ;
             ;
         }
