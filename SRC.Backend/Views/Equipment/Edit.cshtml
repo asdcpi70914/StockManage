@@ -9,6 +9,15 @@
     SRCLoginMeta meta = User.Identity.LoginMeta();
     var backendUsers = _Backend.AllBackendUser();
     var superiorDic = backendUsers;
+
+    var ReadOnly = "";
+    var styleColor = "";
+
+    if(Model.Action == ActionMode.EDIT)
+    {
+        ReadOnly = "readonly";
+        styleColor = "background-color:gainsboro";
+    }
 }
 <input name="pid" type="hidden" value="@Model.pid" />
 
@@ -25,7 +34,7 @@
 
 <div class="mb-3">
     <label for="stock" class="form-label mustkeyin">庫存</label>
-    <input type="text" id="stock" name="stock" value="@Model.stock" maxlength="100" placeholder="請輸入庫存數量" class="form-control" required />
+    <input type="text" id="stock" name="stock" value="@Model.stock" maxlength="100" placeholder="請輸入庫存數量" class="form-control" style="@(styleColor)" @(ReadOnly) required />
 </div>
 
 <script>

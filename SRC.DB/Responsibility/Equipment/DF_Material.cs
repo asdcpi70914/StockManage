@@ -18,9 +18,11 @@ namespace SRC.DB.Responsibility.Equipment
         {
         }
 
-        public List<material_maintain> SearchMaterialMaintain(string name, int? price, DateTime? start_time, DateTime? end_time, string state, int? page, int? take, out int rowtotal)
+        public List<equipment_maintain> SearchMaterialMaintain(string name, int? price, DateTime? start_time, DateTime? end_time, string state, int? page, int? take, out int rowtotal)
         {
-            IQueryable<material_maintain> data = DB.material_maintains.AsNoTracking();
+            IQueryable<equipment_maintain> data = DB.equipment_maintains.AsNoTracking();
+
+            data = data.Where(x => x.type == MINBASESTOCK_TYPE.STATE.MATERIAL.ToString());
 
             if (!string.IsNullOrWhiteSpace(name))
             {
@@ -47,35 +49,35 @@ namespace SRC.DB.Responsibility.Equipment
                 data = data.Where(x => x.state == state);
             }
 
-            return Pagination<material_maintain>(data, page, take, out rowtotal);
+            return Pagination<equipment_maintain>(data, page, take, out rowtotal);
         }
 
-        public material_maintain GetMaterialMaintain(long pid)
+        public equipment_maintain GetMaterialMaintain(long pid)
         {
-            return DB.material_maintains.AsNoTracking().Where(x => x.pid == pid).FirstOrDefault();
+            return DB.equipment_maintains.AsNoTracking().Where(x => x.pid == pid).FirstOrDefault();
         }
 
         public bool CheckSameName(long? pid, string Name)
         {
             if (pid.HasValue)
             {
-                return DB.material_maintains.AsNoTracking().Where(x => x.pid != pid.Value && x.name == Name).Any();
+                return DB.equipment_maintains.AsNoTracking().Where(x => x.pid != pid.Value && x.name == Name && x.type == MINBASESTOCK_TYPE.STATE.MATERIAL.ToString()).Any();
             }
             else
             {
-                return DB.material_maintains.AsNoTracking().Where(x => x.name == Name).Any();
+                return DB.equipment_maintains.AsNoTracking().Where(x => x.name == Name && x.type == MINBASESTOCK_TYPE.STATE.MATERIAL.ToString()).Any();
             }
         }
 
-        public async Task Create(material_maintain data)
+        public async Task Create(equipment_maintain data)
         {
-            await DB.material_maintains.AddAsync(data);
+            await DB.equipment_maintains.AddAsync(data);
             await DB.SaveChangesAsync();
         }
 
-        public async Task Edit(material_maintain data)
+        public async Task Edit(equipment_maintain data)
         {
-            var editData = await DB.material_maintains.Where(x => x.pid == data.pid).FirstOrDefaultAsync();
+            var editData = await DB.equipment_maintains.Where(x => x.pid == data.pid).FirstOrDefaultAsync();
 
             if (editData == null)
             {
@@ -83,7 +85,7 @@ namespace SRC.DB.Responsibility.Equipment
             }
 
             editData.name = data.name;
-            editData.stock = data.stock;
+            //editData.stock = data.stock;
             editData.price = data.price;
             editData.editor = data.editor;
             editData.edit_time = data.edit_time;
@@ -93,7 +95,7 @@ namespace SRC.DB.Responsibility.Equipment
 
         public async Task Delete(List<long> pids, string account)
         {
-            var Data = await DB.material_maintains.Where(x => pids.Contains(x.pid)).ToListAsync();
+            var Data = await DB.equipment_maintains.Where(x => pids.Contains(x.pid)).ToListAsync();
 
             foreach (var each in Data)
             {

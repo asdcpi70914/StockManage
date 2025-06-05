@@ -1,10 +1,10 @@
-﻿@model DeliveryIndex
+﻿@model PayTreasuryIndex
 @inject SysAppsetting Setting
 
 @{
     int take = Setting.PaginationTake;
 
-    string controller = "Delivery";
+    string controller = "PayTreasury";
     string searchAction = "Search";
     string ExportAction = "Export";
 
@@ -13,12 +13,11 @@
                 id = "btn-search",
                 AuthorityUrl = @Url.Action(searchAction, controller)
             };
-
     SRCTools export = new SRCTools()
             {
                 id = "btn-export",
                 AuthorityUrl = @Url.Action(ExportAction, controller),
-                Desc = "產生取料單"
+                Desc = "匯出器材消耗清冊"
             };
     var DropDownSelect = new MINBASESTOCK_TYPE().All();
 }
@@ -33,7 +32,6 @@
                     <div class="form-check form-switch form-switch-right form-switch-md">
                         <partial name="Component/_src_btn_search" for="@search)" />
                     </div>
-
                     <div class="form-check form-switch form-switch-right form-switch-md">
                         <partial name="Component/_src_btn_add" for="@export)" />
                     </div>
@@ -200,7 +198,6 @@
             $("#search_form").append("<input type='hidden' name='take' value='" + take + "' />");
             $("#search_form").submit();
         });
-
     </script>
 
 }

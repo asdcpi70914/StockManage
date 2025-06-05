@@ -156,7 +156,7 @@ namespace SRC.Backend.Controllers.Delivery
 
             ExcelLogic excelLogic = new ExcelLogic(SLog);
 
-            byte[] excelResult = excelLogic.MaterialReceipt(data.data, DF_SystemCode);
+            byte[] excelResult = excelLogic.MaterialReceipt(data.data);
 
             if (excelResult != null)
             {

@@ -1,0 +1,150 @@
+﻿@model PayTreasurySearch
+@inject MenusAuth Muens
+@{
+    string controller = "PayTreasury";
+    string editAction = "Edit";
+
+    SRCLoginMeta meta = User.Identity.LoginMeta();
+
+    SRCTools edit = new SRCTools
+            {
+                IgnoreAuthUrl = false,
+                AuthorityUrl = Url.Action(editAction, controller),
+                Desc = "繳庫"
+            };
+}
+
+<div id="aoeDiv"></div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">查詢結果</h4>
+            </div><!-- end card header -->
+
+            <div class="card-body">
+                <div id="customerList">
+                    <div class="row g-4 mb-3">
+                        <div class="col-sm-auto">
+                            <div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive table-card mt-3 mb-1">
+                        <table class="table table-sm dt-responsive align-middle table-hover" id="search-table-lv1">
+                            <thead class="table-light">
+                                <tr style="white-space:nowrap">
+                                    <th>裝備/器材名稱</th>
+                                    <th>申請數量</th>
+                                    <th>申請人</th>
+                                    <th>申請時間</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list form-check-all">
+                                @if (Model != null)
+                                    @if (Model.Data.Count > 0)
+                                    {
+                                        int idx = 0;
+                                        foreach (var each in Model.Data)
+                                        {
+                                            idx += 1;
+                                            <tr id="acctount_tr_@(each.pid)">
+                                                <td>@each.name</td>
+                                                <td>@each.apply_amount</td>
+                                                <td>@each.apply_name</td>
+                                                <td>@(each.apply_time.ToString("yyyy年MM月dd日"))</td>
+                                                <td>
+                                                    @{
+                                                        List<string> CanShowBtn = new List<string>()
+                                                        {
+                                                            UNITAPPLY_STATE.STATE.INIT.ToString(),
+                                                            UNITAPPLY_STATE.STATE.REVIEW_FAIL.ToString(),
+                                                        };
+                                                    }
+                                                    <div class="d-flex gap-2">
+                                                        <div class="edit">
+                                                            @{
+                                                                edit.id = $"btn-edit-pid_{@idx}";
+                                                                edit.mainkey = each.pid.ToString();
+                                                            }
+                                                            <partial name="Component/_src_tools_edit" for="@edit)" />
+
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                        }
+                                    }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (Model == null) { return; }
+                    else
+                    {
+                        <partial name="Component/_src_ly_pagination" model="@Model.Pagination" />
+                    }
+                </div>
+            </div><!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+
+
+<script>
+    function bindEditTools() {
+        $.each($("[id^='btn-edit-pid_']"), function () {
+            $(this).on('click', function () {
+
+                GetEditView($(this).attr("mainkey")).then(
+                    success => {
+                        _src_aoeLy_Show("edit_form");
+                    },
+                    fail => {
+                        console.log("error");
+                    }
+                );
+
+            });
+
+        });
+    }
+
+    function GetEditView(id) {
+
+        let p1 = new Promise((resolve, reject) => {
+
+            $.ajax({
+                type: "Get",
+                url: "@Url.Action(editAction, controller)",
+                data: { "pid": id },
+                dataType: "html",
+                success: function (result) {
+                    $('#aoeDiv').html(result);
+                    resolve(true);
+                },
+                beforeSend: function () {
+                    _srcvalley_pg_loading();
+                },
+                complete: function () {
+                    _srcvalley_pg_loading_stop();
+                }
+
+            });
+
+        });
+
+        return p1;
+    }
+
+   
+    bindEditTools();
+</script>
+

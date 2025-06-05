@@ -335,7 +335,7 @@ namespace SRC.Backend.Models.Brain
             return columnIndex;
         }
 
-        public byte[] MaterialReceipt(List<UnitApplyComplex> Data,IDF_SystemCode DF_SystemCode)
+        public byte[] MaterialReceipt(List<UnitApplyComplex> Data)
         {
             try
             {
@@ -345,8 +345,6 @@ namespace SRC.Backend.Models.Brain
                 string[] title = new string[] {
                    "器材/裝備名稱", "申請人", "申請時間", "申請單位"
                 };
-
-                var SystemCodeList = DF_SystemCode.List_SystemCode("UNIT");
 
                 using (MemoryStream ms = new MemoryStream())
                 {
@@ -373,14 +371,12 @@ namespace SRC.Backend.Models.Brain
                         {
                             for (int i = 0; i < Data.Count(); i++)
                             {
-                                var SystemCode = SystemCodeList.Where(x => x.data == Data[i].unit).FirstOrDefault();
-
                                 cellIdx = 0;
                                 dataPart.Append(row = new Row());
                                 row.InsertAt(StringCell(Data[i].sub_name), cellIdx++);
                                 row.InsertAt(StringCell(Data[i].Apply_Name), cellIdx++);
                                 row.InsertAt(StringCell(Data[i].create_time.ToString("yyyy年MM月dd日 HH時mm分")), cellIdx++);
-                                row.InsertAt(StringCell(SystemCode?.description), cellIdx++);
+                                row.InsertAt(StringCell(Data[i].unit), cellIdx++);
                             }
                         }
                     }
@@ -393,6 +389,66 @@ namespace SRC.Backend.Models.Brain
             catch (Exception ex)
             {
                 Logger.Fatal(ex, $"產生取料單發生異常,{ex.Message}");
+            }
+
+            return null;
+        }
+
+        public byte[] EquipmentConsumptionList(List<PayTreasuryComplex> Data)
+        {
+            try
+            {
+                SpreadsheetDocument xml = null;
+                SheetData dataPart = null;
+
+                string[] title = new string[] {
+                   "器材/裝備名稱", "申請人", "申請單位", "申請數量","繳回數量"
+                };
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+
+                    CreateExcelComponent("器材消耗清冊", ms, out xml, out dataPart);
+
+                    Row row = new Row();
+                    dataPart.Append(row);
+                    int headIdx = 0;
+                    foreach (var each in title)
+                    {
+                        row.InsertAt(new Cell()
+                        {
+                            CellValue = new CellValue(each),
+                            DataType = new EnumValue<CellValues>(CellValues.String),
+
+                        }, headIdx++);
+                    }
+
+                    int cellIdx = 0;
+                    if (Data != null)
+                    {
+                        if (Data.Count() > 0)
+                        {
+                            for (int i = 0; i < Data.Count(); i++)
+                            {
+                                cellIdx = 0;
+                                dataPart.Append(row = new Row());
+                                row.InsertAt(StringCell(Data[i].name), cellIdx++);
+                                row.InsertAt(StringCell(Data[i].apply_name), cellIdx++);
+                                row.InsertAt(StringCell(Data[i].unit), cellIdx++);
+                                row.InsertAt(StringCell(Data[i].apply_amount.ToString()), cellIdx++);
+                                row.InsertAt(StringCell(Data[i].already_pay_amount.ToString()), cellIdx++);
+                            }
+                        }
+                    }
+
+                    byte[] excelFile = SaveStream(xml, ms);
+                    return excelFile;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Fatal(ex, $"產生器材消耗清冊發生異常,{ex.Message}");
             }
 
             return null;

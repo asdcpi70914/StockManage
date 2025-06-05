@@ -29,8 +29,6 @@ public partial class EFContext : DbContext
 
     public virtual DbSet<func> funcs { get; set; }
 
-    public virtual DbSet<material_maintain> material_maintains { get; set; }
-
     public virtual DbSet<min_base_stock_subscribe_setting> min_base_stock_subscribe_settings { get; set; }
 
     public virtual DbSet<role> roles { get; set; }
@@ -39,6 +37,8 @@ public partial class EFContext : DbContext
 
     public virtual DbSet<role_func> role_funcs { get; set; }
 
+    public virtual DbSet<stockin_log> stockin_logs { get; set; }
+
     public virtual DbSet<subscribepoint_maintain> subscribepoint_maintains { get; set; }
 
     public virtual DbSet<system_code> system_codes { get; set; }
@@ -46,6 +46,7 @@ public partial class EFContext : DbContext
     public virtual DbSet<unit_apply> unit_applies { get; set; }
 
     public virtual DbSet<unit_apply_review_log> unit_apply_review_logs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<backend_dept>(entity =>
@@ -214,6 +215,9 @@ public partial class EFContext : DbContext
             entity.Property(e => e.state)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.type)
+                .HasMaxLength(50)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<func>(entity =>
@@ -239,29 +243,6 @@ public partial class EFContext : DbContext
                 .HasMaxLength(15)
                 .IsUnicode(false);
             entity.Property(e => e.url).HasMaxLength(400);
-        });
-
-        modelBuilder.Entity<material_maintain>(entity =>
-        {
-            entity.HasKey(e => e.pid);
-
-            entity.ToTable("material_maintain");
-
-            entity.Property(e => e.create_time).HasColumnType("datetime");
-            entity.Property(e => e.creator)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.edit_time).HasColumnType("datetime");
-            entity.Property(e => e.editor)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.name)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.price).HasColumnType("decimal(18, 0)");
-            entity.Property(e => e.state)
-                .HasMaxLength(50)
-                .IsUnicode(false);
         });
 
         modelBuilder.Entity<min_base_stock_subscribe_setting>(entity =>
@@ -331,6 +312,18 @@ public partial class EFContext : DbContext
             entity.ToTable("role_func", tb => tb.HasComment("功能權限"));
         });
 
+        modelBuilder.Entity<stockin_log>(entity =>
+        {
+            entity.HasKey(e => e.pid);
+
+            entity.ToTable("stockin_log");
+
+            entity.Property(e => e.create_time).HasColumnType("datetime");
+            entity.Property(e => e.creator)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<subscribepoint_maintain>(entity =>
         {
             entity.HasKey(e => e.pid);
@@ -378,6 +371,7 @@ public partial class EFContext : DbContext
             entity.Property(e => e.editor)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.pay_treasury).HasComment("繳庫數量");
             entity.Property(e => e.state)
                 .HasMaxLength(50)
                 .IsUnicode(false);

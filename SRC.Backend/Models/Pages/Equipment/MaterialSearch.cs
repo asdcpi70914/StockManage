@@ -5,7 +5,7 @@ namespace SRC.Backend.Models.Pages.Equipment
 {
     public class MaterialSearch
     {
-        public List<material_maintain> Data { get; set; }
+        public List<equipment_maintain> Data { get; set; }
         public SRCUIPagination Pagination { get; set; }
     }
 }

@@ -1,12 +1,11 @@
-﻿@model DeliveryIndex
+﻿@model PurchaseStockInIndex
 @inject SysAppsetting Setting
 
 @{
     int take = Setting.PaginationTake;
 
-    string controller = "Delivery";
+    string controller = "PurchaseStockIn";
     string searchAction = "Search";
-    string ExportAction = "Export";
 
     SRCTools search = new SRCTools()
             {
@@ -14,12 +13,6 @@
                 AuthorityUrl = @Url.Action(searchAction, controller)
             };
 
-    SRCTools export = new SRCTools()
-            {
-                id = "btn-export",
-                AuthorityUrl = @Url.Action(ExportAction, controller),
-                Desc = "產生取料單"
-            };
     var DropDownSelect = new MINBASESTOCK_TYPE().All();
 }
 
@@ -33,14 +26,10 @@
                     <div class="form-check form-switch form-switch-right form-switch-md">
                         <partial name="Component/_src_btn_search" for="@search)" />
                     </div>
-
-                    <div class="form-check form-switch form-switch-right form-switch-md">
-                        <partial name="Component/_src_btn_add" for="@export)" />
-                    </div>
                 </div>
             </div>
             <div class="card-body">
-                <form id="search_form" action="@Url.Action(ExportAction,controller)" method="post">
+                <form id="search_form">
                     <div class="collapse show" id="search-div">
                         <div class="row gy-4">
                             <div class="col-xxl-2 col-md-2">
@@ -65,28 +54,26 @@
 
                             <div class="col-xxl-2 col-md-2">
                                 <div>
-                                    <label for="subscribepoint_pid" class="form-label">申購點</label>
-                                    <select id="subscribepoint_pid" name="subscribepoint_pid" class="form-control">
-                                        <option></option>
-                                        @foreach (var each in Model.subscribepointDic)
-                                        {
-                                            <option value="@each.Key">@each.Value</option>
-                                        }
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-xxl-2 col-md-2">
-                                <div>
                                     <label for="start_time" class="form-label">建立時間(起)</label>
-                                    <input type="date" class="form-control form-control" id="start_time" name="start_time">
+                                    <input type="date" class="form-control form-control-sm" id="start_time" name="start_time">
                                 </div>
                             </div>
 
                             <div class="col-xxl-2 col-md-2">
                                 <div>
                                     <label for="end_time" class="form-label">建立時間(訖)</label>
-                                    <input type="date" class="form-control form-control" id="end_time" name="end_time">
+                                    <input type="date" class="form-control form-control-sm" id="end_time" name="end_time">
+                                </div>
+                            </div>
+
+                            <div class="col-xxl-1 col-md-2">
+                                <div>
+                                    <label for="state" class="form-label">狀態</label>
+                                    <select class="form-control form-control-sm" data-trigger id="state" name="state">
+                                        <!option value=""></!option>
+                                        <!option value="@EQUIPMENT_STATE.STATE.ENABLE.ToString()">啟用</!option>
+                                        <!option value="@EQUIPMENT_STATE.STATE.INVALID.ToString()">作廢</!option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -182,24 +169,6 @@
                 }
             });
         }
-
-        $("#btn-export").on('click', function () {
-            var page = $("#_src_pagination_select").val();
-            $("#search_form input[name='page']").remove();
-            $("#search_form input[name='take']").remove();
-
-            var take = @take;
-            if (typeof _srcvalley_ly_pagination_take == 'function') {
-                take = _srcvalley_ly_pagination_take('');
-                if (take == '') {
-                    take = take;
-                }
-            }
-
-            $("#search_form").append("<input type='hidden' name='page' value='" + page + "' />");
-            $("#search_form").append("<input type='hidden' name='take' value='" + take + "' />");
-            $("#search_form").submit();
-        });
 
     </script>
 

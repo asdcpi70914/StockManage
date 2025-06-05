@@ -1,0 +1,45 @@
+﻿@model PurchaseStockInEdit
+@{
+
+}
+
+<input type="hidden" name="pid" value="@Model.pid" />
+
+<div class="mb-3" id="edit_div">
+    <div class="row">
+        <div class="col-6">
+            <label for="oldstock" class="form-label mustkeyin">剩餘庫存數量</label>
+            <input type="text" class="form-control" id="oldstock" name="oldstock" value="@Model.old_stock" readonly style="background-color:gainsboro" />
+        </div>
+        <div class="col-6">
+            <label for="addstock" class="form-label mustkeyin">入庫後數量</label>
+            <input type="text" class="form-control" id="addstock" name="addstock" value="" readonly style="background-color:gainsboro" />
+        </div>
+    </div>
+</div>
+
+<div class="mb-3" id="edit_div">
+    <label for="stock" class="form-label mustkeyin">入庫數量</label>
+    <input type="text" class="form-control" id="stock" name="stock" value="" oninput="AddStock(this)" />
+</div>
+
+
+<script>
+    function AddStock(thi) {
+        var amount = $(thi).val();
+        var old_amount = $("#oldstock").val();
+
+        var ParseAmount = 0;
+        var Parseold_amount = 0;
+
+        if(amount != ""){
+           ParseAmount = parseInt(amount); 
+        }
+        
+        if (old_amount != "") {
+            Parseold_amount = parseInt(old_amount);
+        }
+
+        $("#addstock").val(ParseAmount + Parseold_amount);
+    }
+</script>

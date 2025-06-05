@@ -59,14 +59,15 @@ namespace SRC.Backend.Models.Brain
         {
             try
             {
-                material_maintain data = new material_maintain()
+                equipment_maintain data = new equipment_maintain()
                 {
                     name = model.name,
                     price = model.price.Value,
                     stock = model.stock.Value,
                     create_time = DateTime.Now,
                     creator = account,
-                    state = EQUIPMENT_STATE.STATE.ENABLE.ToString()
+                    state = EQUIPMENT_STATE.STATE.ENABLE.ToString(),
+                    type = MINBASESTOCK_TYPE.STATE.MATERIAL.ToString(),
                 };
 
                 await DF_Material.Create(data);
@@ -85,7 +86,7 @@ namespace SRC.Backend.Models.Brain
         {
             try
             {
-                material_maintain data = new material_maintain()
+                equipment_maintain data = new equipment_maintain()
                 {
                     pid = model.pid,
                     name = model.name,

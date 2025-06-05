@@ -23,5 +23,10 @@ public partial class unit_apply
 
     public string state { get; set; } = null!;
 
+    /// <summary>
+    /// 繳庫數量
+    /// </summary>
+    public int? pay_treasury { get; set; }
+
     public virtual ICollection<unit_apply_review_log> unit_apply_review_logs { get; } = new List<unit_apply_review_log>();
 }

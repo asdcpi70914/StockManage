@@ -69,7 +69,7 @@ namespace SRC.DB.Responsibility.UnitApply
             var EquipmentList = query.Where(x => x.type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString()).Select(x => x.sub_pid).ToList();
             var equipment = DB.equipment_maintains.AsNoTracking().AsNoTracking().Where(x => EquipmentList.Contains(x.pid)).ToList();
             var MaterialList = query.Where(x => x.type == MINBASESTOCK_TYPE.STATE.MATERIAL.ToString()).Select(x => x.sub_pid).ToList();
-            var material = DB.material_maintains.AsNoTracking().AsNoTracking().Where(x => MaterialList.Contains(x.pid)).ToList();
+            var material = DB.equipment_maintains.AsNoTracking().AsNoTracking().Where(x => MaterialList.Contains(x.pid)).ToList();
 
             foreach(var each in dataResult)
             {
@@ -110,16 +110,8 @@ namespace SRC.DB.Responsibility.UnitApply
 
             var RemainingStock = 0;
 
-            if (setting.type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString())
-            {
-                var sub = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
-                result.RemainingStock = sub.stock;
-            }
-            else
-            {
-                var sub = DB.material_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
-                result.RemainingStock = sub.stock;
-            }
+            var sub = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
+            result.RemainingStock = sub.stock;
 
             result.pid = data.pid;
             result.apply_amount = data.apply_amount;
@@ -151,18 +143,9 @@ namespace SRC.DB.Responsibility.UnitApply
             var subscribepoint = DB.subscribepoint_maintains.AsNoTracking().Where(x => x.pid == setting.subscribepoint_pid).FirstOrDefault();
             var RemainingStock = 0;
 
-            if (setting.type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString())
-            {
-                var sub = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
-                result.sub_name = $"{sub.name}【{subscribepoint?.name}】";
-                result.RemainingStock = sub.stock;
-            }
-            else
-            {
-                var sub = DB.material_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
-                result.sub_name = $"{sub.name}【{subscribepoint?.name}】";
-                result.RemainingStock = sub.stock;
-            }
+            var sub = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
+            result.sub_name = $"{sub.name}【{subscribepoint?.name}】";
+            result.RemainingStock = sub.stock;
 
             result.pid = data.pid;
             result.apply_amount = data.apply_amount;
@@ -290,29 +273,14 @@ namespace SRC.DB.Responsibility.UnitApply
             var SubPids = data.Select(x => x.sub_pid).ToList();
             var SubscribepointList = DB.subscribepoint_maintains.AsNoTracking().Where(x => SubscribepointPids.Contains(x.pid)).ToList();
             var EquipmentList = new List<equipment_maintain>();
-            var MaterialList = new List<material_maintain>();
 
-            if(type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString())
-            {
-                EquipmentList = DB.equipment_maintains.AsNoTracking().Where(x => SubPids.Contains(x.pid)).ToList();
-            }
-            else
-            {
-                MaterialList = DB.material_maintains.AsNoTracking().Where(x => SubPids.Contains(x.pid)).ToList();
-            }
+            EquipmentList = DB.equipment_maintains.AsNoTracking().Where(x => SubPids.Contains(x.pid)).ToList();
 
             Dictionary<long, string> result = new Dictionary<long, string>();
             string subName = "";
             foreach(var each in data)
             {
-                if (type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString())
-                {
-                    subName = EquipmentList.Where(x => x.pid == each.sub_pid).FirstOrDefault()?.name;
-                }
-                else
-                {
-                    subName = MaterialList.Where(x => x.pid == each.sub_pid).FirstOrDefault()?.name;
-                }
+                subName = EquipmentList.Where(x => x.pid == each.sub_pid).FirstOrDefault()?.name;
 
                 var Subscribepoint = SubscribepointList.Where(x => x.pid == each.subscribepoint_pid).FirstOrDefault();
 
@@ -328,14 +296,7 @@ namespace SRC.DB.Responsibility.UnitApply
 
             if (SettingPid != null)
             {
-                if (type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString())
-                {
-                    return DB.equipment_maintains.AsNoTracking().Where(x => x.pid == SettingPid.sub_pid).FirstOrDefault()?.stock;
-                }
-                else
-                {
-                    return DB.material_maintains.AsNoTracking().Where(x => x.pid == SettingPid.sub_pid).FirstOrDefault()?.stock;
-                }
+                return DB.equipment_maintains.AsNoTracking().Where(x => x.pid == SettingPid.sub_pid).FirstOrDefault()?.stock;
             }
             else
             {
@@ -365,14 +326,7 @@ namespace SRC.DB.Responsibility.UnitApply
 
             string sub_name = "";
             string subscribepoint = DB.subscribepoint_maintains.AsNoTracking().Where(x => x.pid == Setting.subscribepoint_pid).FirstOrDefault()?.name;
-            if (Setting.type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString())
-            {
-                sub_name = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == Setting.sub_pid).FirstOrDefault()?.name;
-            }
-            else
-            {
-                sub_name = DB.material_maintains.AsNoTracking().Where(x => x.pid == Setting.sub_pid).FirstOrDefault()?.name;
-            }
+            sub_name = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == Setting.sub_pid).FirstOrDefault()?.name;
 
             var Users = DB.backend_users.AsNoTracking().Where(x => ReviewAccount.Contains(x.account)).ToList();
 

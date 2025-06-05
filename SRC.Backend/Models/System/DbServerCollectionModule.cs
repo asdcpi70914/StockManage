@@ -20,6 +20,10 @@ using SRC.DB.Interfaces.SupplyRoomApply;
 using SRC.DB.Responsibility.SupplyRoomApply;
 using SRC.DB.Interfaces.Delivery;
 using SRC.DB.Responsibility.Delivery;
+using SRC.DB.Interfaces.PurchaseStockIn;
+using SRC.DB.Responsibility.PurchaseStockIn;
+using SRC.DB.Interfaces.PayTreasury;
+using SRC.DB.Responsibility.PayTreasury;
 
 namespace SRC.Backend.Models.System
 {
@@ -41,6 +45,8 @@ namespace SRC.Backend.Models.System
                 .AddTransient<IDF_Distribute, DF_Distribute>()
                 .AddTransient<IDF_SupplyRoomApply, DF_SupplyRoomApply>()
                 .AddTransient<IDF_Delivery, DF_Delivery>()
+                .AddTransient<IDF_PurchaseStockIn, DF_PurchaseStockIn>()
+                .AddTransient<IDF_PayTreasury, DF_PayTreasury>()
                 ;
             ;
         }

@@ -7,6 +7,8 @@ public partial class equipment_maintain
 {
     public long pid { get; set; }
 
+    public string type { get; set; } = null!;
+
     public string name { get; set; } = null!;
 
     public decimal price { get; set; }

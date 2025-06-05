@@ -69,7 +69,7 @@ namespace SRC.DB.Responsibility.SupplyRoomApply
             var EquipmentList = query.Where(x => x.type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString()).Select(x => x.sub_pid).ToList();
             var equipment = DB.equipment_maintains.AsNoTracking().AsNoTracking().Where(x => EquipmentList.Contains(x.pid)).ToList();
             var MaterialList = query.Where(x => x.type == MINBASESTOCK_TYPE.STATE.MATERIAL.ToString()).Select(x => x.sub_pid).ToList();
-            var material = DB.material_maintains.AsNoTracking().AsNoTracking().Where(x => MaterialList.Contains(x.pid)).ToList();
+            var material = DB.equipment_maintains.AsNoTracking().AsNoTracking().Where(x => MaterialList.Contains(x.pid)).ToList();
 
             foreach (var each in dataResult)
             {
@@ -111,18 +111,9 @@ namespace SRC.DB.Responsibility.SupplyRoomApply
             var subscribepoint = DB.subscribepoint_maintains.AsNoTracking().Where(x => x.pid == setting.subscribepoint_pid).FirstOrDefault();
             var RemainingStock = 0;
 
-            if (setting.type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString())
-            {
-                var sub = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
-                result.sub_name = $"{sub.name}【{subscribepoint?.name}】";
-                result.RemainingStock = sub.stock;
-            }
-            else
-            {
-                var sub = DB.material_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
-                result.sub_name = $"{sub.name}【{subscribepoint?.name}】";
-                result.RemainingStock = sub.stock;
-            }
+            var sub = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
+            result.sub_name = $"{sub.name}【{subscribepoint?.name}】";
+            result.RemainingStock = sub.stock;
 
             result.pid = data.pid;
             result.apply_amount = data.apply_amount;

@@ -21,7 +21,7 @@ namespace SRC.DB.Responsibility.Equipment
 
         public List<equipment_maintain> SearchEquipmentMaintain(string name, int? price, DateTime? start_time, DateTime? end_time, string state, int? page, int? take, out int rowtotal)
         {
-            IQueryable<equipment_maintain> data = DB.equipment_maintains.AsNoTracking();
+            IQueryable<equipment_maintain> data = DB.equipment_maintains.AsNoTracking().Where(x => x.type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString());
 
             if (!string.IsNullOrWhiteSpace(name))
             {
@@ -60,11 +60,11 @@ namespace SRC.DB.Responsibility.Equipment
         {
             if (pid.HasValue)
             {
-                return DB.equipment_maintains.AsNoTracking().Where(x => x.pid != pid.Value && x.name == Name).Any();
+                return DB.equipment_maintains.AsNoTracking().Where(x => x.pid != pid.Value && x.name == Name && x.type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString()).Any();
             }
             else
             {
-                return DB.equipment_maintains.AsNoTracking().Where(x => x.name == Name).Any();
+                return DB.equipment_maintains.AsNoTracking().Where(x => x.name == Name && x.type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString()).Any();
             }
         }
 
@@ -84,7 +84,7 @@ namespace SRC.DB.Responsibility.Equipment
             }
 
             editData.name = data.name;
-            editData.stock = data.stock;
+            //editData.stock = data.stock;
             editData.price = data.price;
             editData.editor = data.editor;
             editData.edit_time = data.edit_time;

@@ -69,14 +69,17 @@ namespace SRC.DB.Responsibility.Delivery
             var EquipmentList = query.Where(x => x.type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString()).Select(x => x.sub_pid).ToList();
             var equipment = DB.equipment_maintains.AsNoTracking().AsNoTracking().Where(x => EquipmentList.Contains(x.pid)).ToList();
             var MaterialList = query.Where(x => x.type == MINBASESTOCK_TYPE.STATE.MATERIAL.ToString()).Select(x => x.sub_pid).ToList();
-            var material = DB.material_maintains.AsNoTracking().AsNoTracking().Where(x => MaterialList.Contains(x.pid)).ToList();
+            var material = DB.equipment_maintains.AsNoTracking().AsNoTracking().Where(x => MaterialList.Contains(x.pid)).ToList();
             var AccountList = dataResult.Select(x => x.creator).ToList();
             var Users = DB.backend_users.AsNoTracking().Where(x => AccountList.Contains(x.account)).ToList();
+
+            var SystemCodeList = DB.system_codes.AsNoTracking().Where(x => x.code == "UNIT").ToList();
 
             foreach (var each in dataResult)
             {
                 var queryResult = queryResults.Where(x => x.pid == each.setting_pid).FirstOrDefault();
                 var User = Users.Where(x => x.account == each.creator).FirstOrDefault();
+                var SystemCode = SystemCodeList.Where(x => x.data == each.unit).FirstOrDefault();
                 result.Add(new UnitApplyComplex()
                 {
                     pid = each.pid,
@@ -86,7 +89,7 @@ namespace SRC.DB.Responsibility.Delivery
                     apply_amount = each.apply_amount,
                     create_time = each.create_time,
                     state = each.state,
-                    unit = each.unit,
+                    unit = SystemCode?.description,
                     Apply_Name = User?.name_ch
                 });
             }
@@ -114,18 +117,9 @@ namespace SRC.DB.Responsibility.Delivery
             var subscribepoint = DB.subscribepoint_maintains.AsNoTracking().Where(x => x.pid == setting.subscribepoint_pid).FirstOrDefault();
             var RemainingStock = 0;
 
-            if (setting.type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString())
-            {
-                var sub = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
-                result.sub_name = $"{sub.name}【{subscribepoint?.name}】";
-                result.RemainingStock = sub.stock;
-            }
-            else
-            {
-                var sub = DB.material_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
-                result.sub_name = $"{sub.name}【{subscribepoint?.name}】";
-                result.RemainingStock = sub.stock;
-            }
+            var sub = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
+            result.sub_name = $"{sub.name}【{subscribepoint?.name}】";
+            result.RemainingStock = sub.stock;
 
             var User = DB.backend_users.AsNoTracking().Where(x => x.account == data.creator).FirstOrDefault();
 
@@ -148,6 +142,20 @@ namespace SRC.DB.Responsibility.Delivery
                 throw new Exception($"查無出貨作業資料，pid：{pid}");
             }
 
+            var setting = await DB.min_base_stock_subscribe_settings.AsNoTracking().Where(x => x.pid == data.setting_pid).FirstOrDefaultAsync();
+
+            if(setting == null)
+            {
+                throw new Exception($"查無基準存量與申購點設定資料，setting：{data.setting_pid}");
+            }
+
+            var equipmentMaintain = await DB.equipment_maintains.Where(x => x.pid == setting.sub_pid).FirstOrDefaultAsync();
+
+            if (equipmentMaintain == null)
+            {
+                throw new Exception($"查無裝備/器材資料，sub_pid：{setting.sub_pid}");
+            }
+
             unit_apply_review_log log = new unit_apply_review_log()
             {
                 unit_apply_pid = pid,
@@ -159,6 +167,7 @@ namespace SRC.DB.Responsibility.Delivery
             };
 
             data.state = UNITAPPLY_STATE.STATE.DELIVERY.ToString();
+            equipmentMaintain.stock = equipmentMaintain.stock - data.apply_amount;
 
             await DB.unit_apply_review_logs.AddAsync(log);
 

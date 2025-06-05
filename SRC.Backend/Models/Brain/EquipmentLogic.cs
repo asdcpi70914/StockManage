@@ -91,7 +91,8 @@ namespace SRC.Backend.Models.Brain
                     price = model.price.Value,
                     stock = model.stock.Value,
                     editor = account,
-                    edit_time = DateTime.Now
+                    edit_time = DateTime.Now,
+                    type = MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString()
                 };
 
                 await DF_Equipment.Edit(data);

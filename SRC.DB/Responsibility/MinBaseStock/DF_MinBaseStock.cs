@@ -56,7 +56,7 @@ namespace SRC.DB.Responsibility.MinBaseStock
             var EquipmentList = query.Where(x => x.type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString()).Select(x => x.sub_pid).ToList();
             var equipment = DB.equipment_maintains.AsNoTracking().AsNoTracking().Where(x => EquipmentList.Contains(x.pid)).ToList();
             var MaterialList = query.Where(x => x.type == MINBASESTOCK_TYPE.STATE.MATERIAL.ToString()).Select(x => x.sub_pid).ToList();
-            var material = DB.material_maintains.AsNoTracking().AsNoTracking().Where(x => MaterialList.Contains(x.pid)).ToList();
+            var material = DB.equipment_maintains.AsNoTracking().AsNoTracking().Where(x => MaterialList.Contains(x.pid)).ToList();
 
             result = query.Select(x => new MinBaseStockComplex()
             {
@@ -79,13 +79,10 @@ namespace SRC.DB.Responsibility.MinBaseStock
 
         public Dictionary<long, string> MinBaseStockSubscribeSettingDropDown(string type)
         {
-            if(type == MINBASESTOCK_TYPE.STATE.MATERIAL.ToString())
+
+            if(!string.IsNullOrWhiteSpace(type))
             {
-                return DB.material_maintains.AsNoTracking().Where(x => x.state != EQUIPMENT_STATE.STATE.INVALID.ToString()).ToDictionary(x => x.pid, x => x.name);
-            }
-            else if(type == MINBASESTOCK_TYPE.STATE.EQUIPMENT.ToString())
-            {
-                return DB.equipment_maintains.AsNoTracking().Where(x => x.state != EQUIPMENT_STATE.STATE.INVALID.ToString()).ToDictionary(x => x.pid, x => x.name);
+                return DB.equipment_maintains.AsNoTracking().Where(x => x.type == type && x.state != EQUIPMENT_STATE.STATE.INVALID.ToString()).ToDictionary(x => x.pid, x => x.name);
             }
             else
             {
