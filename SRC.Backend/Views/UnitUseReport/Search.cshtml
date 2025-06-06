@@ -1,0 +1,87 @@
+﻿@model UnitUseReportSearch
+@inject MenusAuth Muens
+@inject IDF_BackendUser DF_BackendUser
+@inject IDF_SystemCode DF_SystemCode
+@{
+    string controller = "UnitUseReport";
+
+    SRCLoginMeta meta = User.Identity.LoginMeta();
+
+    var AccountList = Model.data.Select(x => x.Apply_Name).ToList();
+    var UnitList = Model.data.Select(x => x.unit).ToList();
+
+    var Users = DF_BackendUser.ListBackUserByAccount(AccountList);
+    var UnitCodes = DF_SystemCode.List_SystemCode("UNIT");
+}
+
+<div id="aoeDiv"></div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">查詢結果</h4>
+            </div><!-- end card header -->
+
+            <div class="card-body">
+                <div id="customerList">
+                    <div class="row g-4 mb-3">
+                        <div class="col-sm-auto">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive table-card mt-3 mb-1">
+                        <table class="table table-sm dt-responsive align-middle table-hover" id="search-table-lv1">
+                            <thead class="table-light">
+                                <tr style="white-space:nowrap">
+                                    <th>裝備/器材名稱</th>
+                                    <th>申請數量</th>
+                                    <th>申請人</th>
+                                    <th>申請點</th>
+                                    <th>申請單位</th>
+                                    <th>申請時間</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list form-check-all">
+                                @if (Model != null)
+                                    @if (Model.data.Count > 0)
+                                    {
+                                        int idx = 0;
+                                        foreach (var each in Model.data)
+                                        {
+                                            var User = Users.Where(x => x.account == each.Apply_Name).FirstOrDefault();
+                                            var UnitCode = UnitCodes.Where(x => x.data == each.unit).FirstOrDefault();
+                                            idx += 1;
+                                            <tr id="acctount_tr_@(each.pid)">
+                                                <td>@each.sub_name</td>
+                                                <td>@each.apply_amount</td>
+                                                <td>@each.subscribepoint</td>
+                                                <td>@User?.name_ch</td>
+                                                <td>@UnitCode?.description</td>
+                                                <td>@(each.create_time.ToString("yyyy年MM月dd日"))</td>
+                                            </tr>
+                                        }
+                                    }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (Model == null) { return; }
+                    else
+                    {
+                        <partial name="Component/_src_ly_pagination" model="@Model.Pagination" />
+                    }
+                </div>
+            </div><!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+
+
+<script>
+
+</script>
+

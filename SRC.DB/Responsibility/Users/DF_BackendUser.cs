@@ -445,5 +445,10 @@ namespace SRC.DB.Responsibility.Users
         {
             return DB.backend_users.AsNoTracking().ToList();
         }
+
+        public List<backend_user> ListBackUserByAccount(List<string> Account)
+        {
+            return DB.backend_users.AsNoTracking().Where(x => Account.Contains(x.account)).ToList();
+        }
     }
 }

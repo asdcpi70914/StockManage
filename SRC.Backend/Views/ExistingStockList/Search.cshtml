@@ -1,0 +1,73 @@
+﻿@model ExistingStockSearch
+@inject MenusAuth Muens
+@{
+    string controller = "ExistingStock";
+
+    SRCLoginMeta meta = User.Identity.LoginMeta();
+}
+
+<div id="aoeDiv"></div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">查詢結果</h4>
+            </div><!-- end card header -->
+
+            <div class="card-body">
+                <div id="customerList">
+                    <div class="row g-4 mb-3">
+                        <div class="col-sm-auto">
+                            <div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive table-card mt-3 mb-1">
+                        <table class="table table-sm dt-responsive align-middle table-hover" id="search-table-lv1">
+                            <thead class="table-light">
+                                <tr style="white-space:nowrap">
+                                    <th>裝備名稱</th>
+                                    <th>剩餘庫存</th>
+                                    <th>建立時間</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list form-check-all">
+                                @if (Model != null)
+                                    @if (Model.Data.Count > 0)
+                                    {
+                                        int idx = 0;
+                                        foreach (var each in Model.Data)
+                                        {
+                                            idx += 1;
+                                            <tr id="acctount_tr_@(each.pid)">
+                                                <td>@each.name</td>
+                                                <td>@each.stock</td>
+                                                <td>@(each.create_time.ToString("yyyy年MM月dd日"))</td>
+                                            </tr>
+                                        }
+                                    }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (Model == null) { return; }
+                    else
+                    {
+                        <partial name="Component/_src_ly_pagination" model="@Model.Pagination" />
+                    }
+                </div>
+            </div><!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+
+
+<script>
+
+</script>
+

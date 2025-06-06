@@ -45,5 +45,7 @@ namespace SRC.DB.Interfaces.Users
         #endregion
 
         List<backend_user> AllBackendUser();
+
+        List<backend_user> ListBackUserByAccount(List<string> Account);
     }
 }

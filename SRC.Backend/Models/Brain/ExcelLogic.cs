@@ -6,7 +6,9 @@ using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Spreadsheet;
 using SRC.Backend.Models.Config;
 using SRC.DB.Interfaces.Settings;
+using SRC.DB.Interfaces.Users;
 using SRC.DB.Models.Complex;
+using SRC.DB.Models.EFMSSQL;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -449,6 +451,133 @@ namespace SRC.Backend.Models.Brain
             catch (Exception ex)
             {
                 Logger.Fatal(ex, $"產生器材消耗清冊發生異常,{ex.Message}");
+            }
+
+            return null;
+        }
+
+        public byte[] UnitUseReport(List<UnitApplyComplex> Data,IDF_SystemCode DF_SystemCode,IDF_BackendUser DF_BackendUser)
+        {
+            try
+            {
+                SpreadsheetDocument xml = null;
+                SheetData dataPart = null;
+
+                var AccountList = Data.Select(x => x.Apply_Name).ToList();
+
+                var Users = DF_BackendUser.ListBackUserByAccount(AccountList);
+                var UnitCodes = DF_SystemCode.List_SystemCode("UNIT");
+
+                string[] title = new string[] {
+                   "器材/裝備名稱", "申請人", "申請點", "申請單位", "申請數量","申請時間"
+                };
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+
+                    CreateExcelComponent("使用單位年報表", ms, out xml, out dataPart);
+
+                    Row row = new Row();
+                    dataPart.Append(row);
+                    int headIdx = 0;
+                    foreach (var each in title)
+                    {
+                        row.InsertAt(new Cell()
+                        {
+                            CellValue = new CellValue(each),
+                            DataType = new EnumValue<CellValues>(CellValues.String),
+
+                        }, headIdx++);
+                    }
+
+                    int cellIdx = 0;
+                    if (Data != null)
+                    {
+                        if (Data.Count() > 0)
+                        {
+                            for (int i = 0; i < Data.Count(); i++)
+                            {
+                                var User = Users.Where(x => x.account == Data[i].Apply_Name).FirstOrDefault();
+                                var UnitCode = UnitCodes.Where(x => x.data == Data[i].unit).FirstOrDefault();
+
+                                cellIdx = 0;
+                                dataPart.Append(row = new Row());
+                                row.InsertAt(StringCell(Data[i].sub_name), cellIdx++);
+                                row.InsertAt(StringCell(User?.name_ch), cellIdx++);
+                                row.InsertAt(StringCell(Data[i].subscribepoint), cellIdx++);
+                                row.InsertAt(StringCell(UnitCode?.description), cellIdx++);
+                                row.InsertAt(StringCell(Data[i].apply_amount.ToString()), cellIdx++);
+                                row.InsertAt(StringCell(Data[i].create_time.ToString("yyyy年MM月dd日")), cellIdx++);
+                            }
+                        }
+                    }
+
+                    byte[] excelFile = SaveStream(xml, ms);
+                    return excelFile;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Fatal(ex, $"產生使用單位年報表發生異常,{ex.Message}");
+            }
+
+            return null;
+        }
+
+        public byte[] ExistingStockReport(List<equipment_maintain> Data)
+        {
+            try
+            {
+                SpreadsheetDocument xml = null;
+                SheetData dataPart = null;
+
+                string[] title = new string[] {
+                   "器材/裝備名稱", "剩餘庫存","建立時間"
+                };
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+
+                    CreateExcelComponent("現有存量清冊", ms, out xml, out dataPart);
+
+                    Row row = new Row();
+                    dataPart.Append(row);
+                    int headIdx = 0;
+                    foreach (var each in title)
+                    {
+                        row.InsertAt(new Cell()
+                        {
+                            CellValue = new CellValue(each),
+                            DataType = new EnumValue<CellValues>(CellValues.String),
+
+                        }, headIdx++);
+                    }
+
+                    int cellIdx = 0;
+                    if (Data != null)
+                    {
+                        if (Data.Count() > 0)
+                        {
+                            for (int i = 0; i < Data.Count(); i++)
+                            {
+                                cellIdx = 0;
+                                dataPart.Append(row = new Row());
+                                row.InsertAt(StringCell(Data[i].name), cellIdx++);
+                                row.InsertAt(StringCell(Data[i].stock.ToString()), cellIdx++);
+                                row.InsertAt(StringCell(Data[i].create_time.ToString("yyyy年MM月dd日")), cellIdx++);
+                            }
+                        }
+                    }
+
+                    byte[] excelFile = SaveStream(xml, ms);
+                    return excelFile;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Fatal(ex, $"產生現有存量清冊發生異常,{ex.Message}");
             }
 
             return null;

@@ -85,6 +85,7 @@ namespace SRC.DB.Responsibility.UnitApply
                     create_time = each.create_time,
                     state = each.state,
                     unit = each.unit,
+                    Apply_Name = each.creator,
                 });
             }
 
