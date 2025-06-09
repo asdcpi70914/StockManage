@@ -27,6 +27,8 @@ public partial class EFContext : DbContext
 
     public virtual DbSet<equipment_maintain> equipment_maintains { get; set; }
 
+    public virtual DbSet<factoryinfo_maintain> factoryinfo_maintains { get; set; }
+
     public virtual DbSet<func> funcs { get; set; }
 
     public virtual DbSet<min_base_stock_subscribe_setting> min_base_stock_subscribe_settings { get; set; }
@@ -41,7 +43,11 @@ public partial class EFContext : DbContext
 
     public virtual DbSet<subscribepoint_maintain> subscribepoint_maintains { get; set; }
 
+    public virtual DbSet<system_city_code> system_city_codes { get; set; }
+
     public virtual DbSet<system_code> system_codes { get; set; }
+
+    public virtual DbSet<system_towncode> system_towncodes { get; set; }
 
     public virtual DbSet<unit_apply> unit_applies { get; set; }
 
@@ -220,6 +226,40 @@ public partial class EFContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<factoryinfo_maintain>(entity =>
+        {
+            entity.HasKey(e => e.pid).HasName("PK_companynfo_maintain");
+
+            entity.ToTable("factoryinfo_maintain");
+
+            entity.Property(e => e.address)
+                .HasMaxLength(250)
+                .IsUnicode(false);
+            entity.Property(e => e.city)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.company_number)
+                .HasMaxLength(8)
+                .IsUnicode(false);
+            entity.Property(e => e.contact_phone)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.create_time).HasColumnType("datetime");
+            entity.Property(e => e.creator)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.edit_time).HasColumnType("datetime");
+            entity.Property(e => e.editor)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.name)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.town)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<func>(entity =>
         {
             entity.HasKey(e => e.pid).HasName("PK_dbo.Func");
@@ -343,6 +383,23 @@ public partial class EFContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<system_city_code>(entity =>
+        {
+            entity.HasKey(e => e.county_code).HasName("PK_system_city_code_1");
+
+            entity.ToTable("system_city_code");
+
+            entity.Property(e => e.county_code)
+                .HasMaxLength(5)
+                .IsUnicode(false);
+            entity.Property(e => e.county_code01)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.name)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<system_code>(entity =>
         {
             entity.HasKey(e => e.pid);
@@ -355,6 +412,26 @@ public partial class EFContext : DbContext
             entity.Property(e => e.data).HasMaxLength(128);
             entity.Property(e => e.description).HasMaxLength(128);
             entity.Property(e => e.sub_description).HasMaxLength(128);
+        });
+
+        modelBuilder.Entity<system_towncode>(entity =>
+        {
+            entity.HasKey(e => e.TownCode);
+
+            entity.ToTable("system_towncode");
+
+            entity.Property(e => e.TownCode)
+                .HasMaxLength(6)
+                .IsUnicode(false);
+            entity.Property(e => e.CountryCode)
+                .HasMaxLength(2)
+                .IsUnicode(false);
+            entity.Property(e => e.TownName)
+                .HasMaxLength(12)
+                .IsUnicode(false);
+            entity.Property(e => e.postalcode)
+                .HasMaxLength(3)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<unit_apply>(entity =>

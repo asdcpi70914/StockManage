@@ -1,0 +1,109 @@
+﻿@model FactoryInfoEdit
+@inject IDF_SystemCode DF_SystemCode
+@{
+    var action = "add";
+    var form = "add_form";
+    string controller = "FactoryInfo";
+    SRCLoginMeta meta = User.Identity.LoginMeta();
+
+    if (Model.Action == ActionMode.EDIT)
+    {
+        action = "edit";
+        form = "edit_form";
+    }
+
+    var Citys = DF_SystemCode.ListCityCode().ToDictionary(x => x.county_code, x => x.name);
+}
+<input name="pid" type="hidden" value="@Model.pid" />
+
+<div class="mb-3" id="edit_div">
+    <label for="name" class="form-label mustKeyin">廠商名稱</label>
+    <input type="text" id="name" name="name" maxlength="50" value="@Model.name"
+           class="form-control" placeholder="請輸入廠商名稱" required />
+</div>
+
+<div class="mb-3" id="edit_div">
+    <label for="company_phone" class="form-label mustKeyin">廠商電話</label>
+    <input type="text" id="company_phone" name="company_phone" maxlength="50" value="@Model.company_phone"
+           class="form-control" placeholder="請輸入廠商電話" required />
+</div>
+
+<div class="mb-3" id="edit_div">
+    <label for="company_number" class="form-label mustKeyin">統一編號</label>
+    <input type="text" id="company_number" name="company_number" maxlength="8" value="@Model.company_number"
+           class="form-control" placeholder="請輸入統一編號" required />
+</div>
+
+<div class="mb-3" id="edit_div">
+    <label for="name" class="form-label mustKeyin">縣市</label>
+    <select id="city" name="city" class="form-control select2" onchange="ChangeTownEdit(this,'@action')">
+        <option></option>
+        @foreach (var each in Citys)
+        {
+            @if(Model.city == each.Key)
+            {
+                <option value="@each.Key" selected>@each.Value</option>
+            }
+            else
+            {
+                <option value="@each.Key">@each.Value</option>
+            }
+        }
+    </select>
+</div>
+
+<div class="mb-3" id="edit_div">
+    <label for="town_@action" class="form-label mustKeyin">鄉鎮市</label>
+    <select id="town_@action" name="town" class="form-control select2">
+        <option></option>
+        @if(Model.Action == ActionMode.EDIT)
+        {
+            @foreach (var each in Model.Towns)
+            {
+                @if (Model.town == each.Key)
+                {
+                    <option value="@each.Key" selected>@each.Value</option>
+                }
+                else
+                {
+                    <option value="@each.Key">@each.Value</option>
+                }
+            }
+        }
+    </select>
+</div>
+
+<div class="mb-3" id="edit_div">
+    <label for="address" class="form-label mustKeyin">廠商地址</label>
+    <input type="text" id="address" name="address" maxlength="250" value="@Model.address"
+           class="form-control" placeholder="請輸入廠商地址" required />
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $(".select2").select2({
+            dropdownParent: $("#@(form)_aoe_ly_title")
+        });
+    })
+
+    function ChangeTownEdit(thi,action) {
+        $.ajax({
+            url: "@Url.Action("ChangeTown", controller)",
+            data: { "code": $(thi).val() },
+            dataType: "json",
+            type: "POST",
+            beforeSend: function () { _srcvalley_pg_loading(); },
+            complete: function () { _srcvalley_pg_loading_stop(); },
+            success: function (result) {
+                $("#town_" + action).html("");
+                var option = "<option></option>"
+                for (var each in result) {
+                    option += "<option value='" + each + "'>" + result[each] + "</option>"
+                }
+
+                $("#town_" + action).append(option);
+            }
+        });
+    }
+</script>

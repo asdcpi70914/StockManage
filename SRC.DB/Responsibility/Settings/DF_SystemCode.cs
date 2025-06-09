@@ -103,5 +103,34 @@ namespace SRC.DB.Responsibility.Settings
         {
             return DB.system_codes.AsNoTracking().Where(x => x.code == "PRODUCT_TYPE" && x.data == data).FirstOrDefault()?.description;
         }
+
+        public List<system_towncode> ListTownCode(string Code)
+        {
+            return DB.system_towncodes.AsNoTracking().Where(x => x.CountryCode == Code).ToList();
+        }
+
+        public List<system_city_code> ListCityCode()
+        {
+            return DB.system_city_codes.AsNoTracking().ToList();
+        }
+
+        public List<system_towncode> ListTownCode(List<string> Codes)
+        {
+            return DB.system_towncodes.AsNoTracking().Where(x => Codes.Contains(x.TownCode)).ToList();
+        }
+
+        public List<system_city_code> ListCityCode(List<string>Codes)
+        {
+            return DB.system_city_codes.AsNoTracking().Where(x => Codes.Contains(x.county_code)).ToList();
+        }
+
+        public system_towncode GetSystemTownCode(string TownCode)
+        {
+            return DB.system_towncodes.AsNoTracking().Where(x => x.TownCode == TownCode).FirstOrDefault();
+        }
+        public system_city_code GetSystemCityCode(string CityCode)
+        {
+            return DB.system_city_codes.AsNoTracking().Where(x => x.county_code == CityCode).FirstOrDefault();
+        }
     }
 }

@@ -1,0 +1,183 @@
+﻿@model FactoryInfoIndex
+@inject SysAppsetting Setting
+@inject IDF_SystemCode DF_SystemCode
+@{
+    int take = Setting.PaginationTake;
+
+    string controller = "FactoryInfo";
+    string searchAction = "Search";
+
+    SRCTools search = new SRCTools()
+            {
+                id = "btn-search",
+                AuthorityUrl = @Url.Action(searchAction, controller)
+            };
+
+    var Citys = DF_SystemCode.ListCityCode().ToDictionary(x => x.county_code,x => x.name);
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">查詢條件</h4>
+                <div class="flex-shrink-0">
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#search-div">收合</button>
+                    <div class="form-check form-switch form-switch-right form-switch-md">
+                        <partial name="Component/_src_btn_search" for="@search)" />
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="search_form">
+                    <div class="collapse show" id="search-div">
+                        <div class="row gy-4">
+                            <div class="col-xxl-2 col-md-2">
+                                <div>
+                                    <label for="name" class="form-label">廠商名稱</label>
+                                    <input type="text" class="form-control" id="name" name="name" maxlength="50">
+                                </div>
+                            </div>
+
+                            <div class="col-xxl-2 col-md-2">
+                                <div>
+                                    <label for="city_search" class="form-label">縣市</label>
+                                    <select class="form-control" id="city_search" name="city" onchange="ChangeTown(this)">
+                                        <option></option>
+                                        @foreach(var each in Citys)
+                                        {
+                                            <option value="@each.Key">@each.Value</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-xxl-2 col-md-2">
+                                <div>
+                                    <label for="town_search" class="form-label">鄉鎮市</label>
+                                    <select class="form-control" id="town_search" name="town"></select>
+                                </div>
+                            </div>
+
+                            <div class="col-xxl-2 col-md-2">
+                                <div>
+                                    <label for="start_time" class="form-label">地址</label>
+                                    <input type="date" class="form-control" id="start_time" name="start_time">
+                                </div>
+                            </div>
+
+                            <div class="col-xxl-2 col-md-2">
+                                <div>
+                                    <label for="end_time" class="form-label">建立時間(訖)</label>
+                                    <input type="date" class="form-control" id="end_time" name="end_time">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="index_list_div">
+    <partial name="Search" model="Model.SearchResultPage" />
+</div>
+
+
+
+@section scripts
+{
+    <script>
+        $(document).ready(init);
+        var cityChoices;
+        var townChoices;
+        function init() {
+            init_btn();
+            cityChoices = new Choices("#city_search", {
+                shouldSort: false,
+            });
+            townChoices = new Choices("#town_search", {
+                shouldSort: false,
+            });
+        }
+
+        function _srcvalley_ly_pagination_search(e) {
+
+            //console.log(e);
+
+            $("#index_list_div").html("");
+            $.ajax({
+                url: "@Url.Action(searchAction, controller)",
+                data: $("#search_form").serialize() + "&page=" + e.page + "&take=" + e.take + "&action=" + e.action,
+                dataType: "html",
+                type: "POST",
+                beforeSend: function () { _srcvalley_pg_loading(); },
+                complete: function () { _srcvalley_pg_loading_stop(); },
+                success: function (pg) {
+                    $("#index_list_div").html(pg);
+                    $(".select2").select2();
+                }
+            });
+        }
+
+        function _src_deletely_success_back() {
+            $("#btn-search").click();
+        }
+
+        function _src_aoely_success_back() {
+            $("#btn-search").click();
+        }
+
+        function _srcvalley_pg_message_fail(targetid) {
+            if (targetid != "") {
+                _src_aoeLy_Show(targetid);
+            }
+        }
+
+        function init_btn() {
+            $("#btn-search").on('click', function () {
+                var take = @take;
+                if (typeof _srcvalley_ly_pagination_take == 'function') {
+                    take = _srcvalley_ly_pagination_take('');
+                    if (take == '') {
+                        take = take;
+                    }
+                }
+                let obj = {
+                    page: 1,
+                    take: take,
+                    action: "now",
+                    id: ""
+                }
+                _srcvalley_ly_pagination_search(obj);
+                $(".select2").select2();
+            });
+        }
+
+        function ChangeTown(thi) {
+            $.ajax({
+                url: "@Url.Action("ChangeTown", controller)",
+                data: { "code": $(thi).val() },
+                dataType: "json",
+                type: "POST",
+                beforeSend: function () { _srcvalley_pg_loading(); },
+                complete: function () { _srcvalley_pg_loading_stop(); },
+                success: function (result) {
+                    townChoices.destroy();
+                    $("#town_search").html("");
+                    var option = "<option></option>"
+                    for (var each in result) {
+                        option += "<option value='" + each + "'>" + result[each] + "</option>"
+                    }
+
+                    $("#town_search").append(option);
+                    townChoices = new Choices("#town_search", {
+                        shouldSort: false,
+                    });
+                }
+            });
+        }
+    </script>
+
+}

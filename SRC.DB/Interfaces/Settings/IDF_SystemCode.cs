@@ -25,5 +25,15 @@ namespace SRC.DB.Interfaces.Settings
 
         Dictionary<string, string> GetProductTypeDropDown();
         string GetProductTypeDesc(string data);
+
+        List<system_towncode> ListTownCode(string Code);
+
+        List<system_city_code> ListCityCode();
+
+        system_towncode GetSystemTownCode(string TownCode);
+        system_city_code GetSystemCityCode(string CityCode);
+
+        List<system_city_code> ListCityCode(List<string> Codes);
+        List<system_towncode> ListTownCode(List<string> Codes);
     }
 }

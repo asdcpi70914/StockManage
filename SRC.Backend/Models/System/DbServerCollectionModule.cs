@@ -26,6 +26,8 @@ using SRC.DB.Interfaces.PayTreasury;
 using SRC.DB.Responsibility.PayTreasury;
 using SRC.DB.Interfaces.ExistingStock;
 using SRC.DB.Responsibility.ExistingStock;
+using SRC.DB.Interfaces.FactoryInfo;
+using SRC.DB.Responsibility.FactoryInfo;
 
 namespace SRC.Backend.Models.System
 {
@@ -50,6 +52,7 @@ namespace SRC.Backend.Models.System
                 .AddTransient<IDF_PurchaseStockIn, DF_PurchaseStockIn>()
                 .AddTransient<IDF_PayTreasury, DF_PayTreasury>()
                 .AddTransient<IDF_ExistingStock, DF_ExistingStock>()
+                .AddTransient<IDF_FactoryInfo, DF_FactoryInfo>()
                 ;
             ;
         }
