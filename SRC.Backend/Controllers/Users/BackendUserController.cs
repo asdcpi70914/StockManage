@@ -191,20 +191,20 @@ namespace SRC.Backend.Controllers.Users
                 person_in_charge = model.person_in_charge
             };
 
-            //新增上下屬關聯表
+            ////新增上下屬關聯表
 
-            backend_dept backend_Dept = new backend_dept()
-            {
-                parent_pid = model.superior,
-                code = model.Unit,
-                create_time = DateTime.Now,
-            };
+            //backend_dept backend_Dept = new backend_dept()
+            //{
+            //    parent_pid = model.superior,
+            //    code = model.Unit,
+            //    create_time = DateTime.Now,
+            //};
 
             SRCPageMessage page = new SRCPageMessage();
 
             try
             {
-                bool Ok = _backendUserDF.Create(newUser, backend_Dept);
+                bool Ok = _backendUserDF.Create(newUser);
                 page.IsSuccess = Ok;
                 page.Message = Ok ? UIMessage.SYS.Success_Add : UIMessage.SYS.Fail_Add;
             }
@@ -282,11 +282,11 @@ namespace SRC.Backend.Controllers.Users
             }
 
             //新增上下屬關聯表
-            backend_dept backend_Dept = new backend_dept();
-            backend_Dept.parent_pid = model.superior;
-            backend_Dept.code = model.Unit;
-            backend_Dept.create_time = DateTime.Now;
-            backend_Dept.backend_user_pid = model.UserId.Value;
+            //backend_dept backend_Dept = new backend_dept();
+            //backend_Dept.parent_pid = model.superior;
+            //backend_Dept.code = model.Unit;
+            //backend_Dept.create_time = DateTime.Now;
+            //backend_Dept.backend_user_pid = model.UserId.Value;
 
             try
             {
@@ -301,7 +301,7 @@ namespace SRC.Backend.Controllers.Users
                     editor = meta.Account,
                     edit_time = DateTime.Now,
                     person_in_charge = model.person_in_charge
-                }, backend_Dept);
+                });
 
                 page.IsSuccess = Ok;
                 page.Message = Ok ? UIMessage.SYS.Success_Edit : UIMessage.SYS.Fail_Edit;
@@ -403,7 +403,7 @@ namespace SRC.Backend.Controllers.Users
 
         [HttpPost]
         [FuncAlias(AliasName = "Create,Edit")]
-        public async Task<IActionResult> InitSuperiorSelect(string unit)
+        public async Task<IActionResult> InitSuperiorSelect(long unit)
         {
             SRCLoginMeta meta = User.Identity.LoginMeta();
 

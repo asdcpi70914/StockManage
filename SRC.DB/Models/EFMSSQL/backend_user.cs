@@ -39,7 +39,7 @@ public partial class backend_user
 
     public string? editor { get; set; }
 
-    public string? unit { get; set; }
+    public long? unit { get; set; }
 
     public bool first_login { get; set; }
 

@@ -8,7 +8,7 @@ namespace SRC.Backend.Models.System
         public Guid? UserId { get; set; }
         public string Account { get; set; }
         public string UserName { get; set; }
-        public string Unit { get; set; }
+        public long? Unit { get; set; }
         public List<string> RoleCode { get; set; }
     }
 }

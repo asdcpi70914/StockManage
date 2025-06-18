@@ -18,6 +18,8 @@ public partial class min_base_stock_subscribe_setting
 
     public int min_base_stock { get; set; }
 
+    public int stock { get; set; }
+
     public DateTime create_time { get; set; }
 
     public string creator { get; set; } = null!;

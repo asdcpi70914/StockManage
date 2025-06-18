@@ -1,5 +1,6 @@
 ﻿@model MaterialSearch
 @inject MenusAuth Muens
+@inject IDF_MinBaseStock DF_MinBaseStock
 @{
     string controller = "Material";
     string editAction = "Edit";
@@ -50,6 +51,9 @@
                 Controller = controller, //到哪一個controller
                 OKButtonMessage = "確定, 我要作廢！"
             };
+
+    var pids = Model.Data.Select(x => x.pid).ToList();
+    var StockSettings = DF_MinBaseStock.ListStockSetting(pids);
 }
 
 
@@ -106,6 +110,7 @@
                                         int idx = 0;
                                         foreach (var each in Model.Data)
                                         {
+                                            var StockSetting = StockSettings.Where(x => x.sub_pid == each.pid).ToList();
                                             idx += 1;
                                             <tr id="acctount_tr_@(each.pid)">
                                                 <th scope="row">
@@ -115,7 +120,7 @@
                                                 </th>
                                                 <td>@each.name</td>
                                                 <td>@each.price</td>
-                                                <td>@each.stock</td>
+                                                <td>@(StockSetting.Sum(x => x.stock))</td>
                                                 <td>@(each.create_time.ToString("yyyy年MM月dd日"))</td>
                                                 <td>
                                                     <span class="badge @(each.state == EQUIPMENT_STATE.STATE.ENABLE.ToString() ? "badge-soft-success" : "badge-soft-danger") text-uppercase">

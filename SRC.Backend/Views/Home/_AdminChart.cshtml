@@ -1,0 +1,96 @@
+﻿@model List<IGrouping<string,HomeComplex.HomeMidData>>
+
+
+
+@{
+    var apexchartIndex = 0;
+    var chartrow = 1;
+
+    if (Model.Count() % 2 != 0)
+    {
+        chartrow = (Model.Count() / 2) + 1;
+    }
+    else
+    {
+        chartrow = (Model.Count() / 2);
+    }
+
+}
+
+@for (var i = 0; i < chartrow; i++)
+{
+    <div class="row">
+        @for (var k = i * 2; k < Model.Count(); k++)
+        {
+            <div class="col-xl-6">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="align-items-center d-flex justify-content-between" style="border-color:white">
+                            <h4 class="table-header-text">@(Model[k].Key)庫存比例</h4>
+                        </div><!-- end card header -->
+
+                        <div class="card-body">
+                            <div id="customerList">
+                                <div class="card-body">
+                                    <div id="apexchart_@apexchartIndex"
+                                         data-colors='["--vz-primary", "--vz-success", "--vz-warning", "--vz-danger", "--vz-info"]'
+                                         class="apex-charts" dir="ltr"></div>
+                                </div>
+                            </div>
+                        </div><!-- end card -->
+
+                        <div class="card-footer" style="text-align:center">
+                            <span>庫存總價值：@(Model[k].Sum(x => x.price * x.stock))</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            apexchartIndex++;
+        }
+    </div>
+}
+
+
+@for (var i = 0; i < Model.Count(); i++)
+{
+    var item = Model[i].ToList();
+    var series = item.Select(x => x.stock).ToList();
+    var labels = item.Select(x => x.equipment_name).ToList();
+    <script>
+        $(document).ready(function () {
+            var seriesArray = @Json.Serialize(series);
+            var labelsArray = @Json.Serialize(labels);
+            var chartDonutBasicColors = getChartColorsArray("apexchart_@i");
+            if (chartDonutBasicColors) {
+                var options = {
+                    series: seriesArray,
+                    labels: labelsArray,
+                    chart: {
+                        height: 350,
+                        type: "donut",
+                    },
+                    legend: {
+                        position: "bottom",
+                    },
+                    stroke: {
+                        show: false
+                    },
+                    dataLabels: {
+                        dropShadow: {
+                            enabled: false,
+                        },
+                    },
+                    colors: ["#4cb3fc", "#ffb3b3", "#EA8841", "#D29E44", "#E2CB9C"],
+                };
+
+                var chart = new ApexCharts(
+                    document.querySelector("#apexchart_@i"),
+                    options
+                );
+                chart.render();
+            }
+        })
+
+    </script>
+}

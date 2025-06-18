@@ -56,6 +56,11 @@ namespace SRC.Backend.Models.Brain
                 ErrorMsg.Add("請輸入最低基準存量");
             }
 
+            if (!model.stock.HasValue)
+            {
+                ErrorMsg.Add("請輸入庫存數量");
+            }
+
             if(!string.IsNullOrWhiteSpace(model.type) && model.subscribepoint_pid.HasValue && model.sub_pid.HasValue)
             {
                 if (DF_MinBaseStock.CheckSameData(model.pid,model.type,model.sub_pid.Value, model.subscribepoint_pid.Value))
@@ -89,6 +94,7 @@ namespace SRC.Backend.Models.Brain
                     sub_pid = model.sub_pid.Value,
                     create_time = DateTime.Now,
                     creator = account,
+                    stock = model.stock.Value,
                     min_base_stock = model.min_base_stock.Value,
                 };
 

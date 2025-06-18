@@ -25,18 +25,18 @@
 <div class="mb-3" id="edit_div">
     <label for="company_phone" class="form-label mustKeyin">廠商電話</label>
     <input type="text" id="company_phone" name="company_phone" maxlength="50" value="@Model.company_phone"
-           class="form-control" placeholder="請輸入廠商電話" required />
+           class="form-control" placeholder="請輸入廠商電話" oninput='this.value=this.value.replace(/[^0-9]/g,"")' required />
 </div>
 
 <div class="mb-3" id="edit_div">
     <label for="company_number" class="form-label mustKeyin">統一編號</label>
     <input type="text" id="company_number" name="company_number" maxlength="8" value="@Model.company_number"
-           class="form-control" placeholder="請輸入統一編號" required />
+           class="form-control" placeholder="請輸入統一編號" oninput='this.value=this.value.replace(/[^0-9]/g,"")' required />
 </div>
 
 <div class="mb-3" id="edit_div">
     <label for="name" class="form-label mustKeyin">縣市</label>
-    <select id="city" name="city" class="form-control select2" onchange="ChangeTownEdit(this,'@action')">
+    <select id="city_@action" name="city" class="form-control" onchange="ChangeTownEdit(this,'@action')">
         <option></option>
         @foreach (var each in Citys)
         {
@@ -54,7 +54,7 @@
 
 <div class="mb-3" id="edit_div">
     <label for="town_@action" class="form-label mustKeyin">鄉鎮市</label>
-    <select id="town_@action" name="town" class="form-control select2">
+    <select id="town_@action" name="town" class="form-control">
         <option></option>
         @if(Model.Action == ActionMode.EDIT)
         {
@@ -79,14 +79,39 @@
            class="form-control" placeholder="請輸入廠商地址" required />
 </div>
 
+@if(Model.Action == ActionMode.EDIT)
+{
+    <script>
+
+        $(document).ready(function () {
+            $("#city_edit").select2({
+                dropdownParent: $("#edit_form_aoe_ly_modal")
+            });
+
+            $("#town_edit").select2({
+                dropdownParent: $("#edit_form_aoe_ly_modal")
+            });
+        })
+    </script>
+}
+else
+{
+    <script>
+
+        $(document).ready(function () {
+            $("#city_add").select2({
+                dropdownParent: $("#add_form_aoe_ly_modal")
+            });
+
+            $("#town_add").select2({
+                dropdownParent: $("#add_form_aoe_ly_modal")
+            });
+        })
+    </script>
+}
+
+
 <script>
-
-    $(document).ready(function () {
-        $(".select2").select2({
-            dropdownParent: $("#@(form)_aoe_ly_title")
-        });
-    })
-
     function ChangeTownEdit(thi,action) {
         $.ajax({
             url: "@Url.Action("ChangeTown", controller)",

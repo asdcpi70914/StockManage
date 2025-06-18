@@ -73,14 +73,14 @@ namespace SRC.DB.Responsibility.PayTreasury
             var ApplyUser = dataResult.Select(x => x.creator).ToList();
             var Users = DB.backend_users.AsNoTracking().Where(x => ApplyUser.Contains(x.account)).ToList();
             var UnitCodes = dataResult.Select(x => x.unit).ToList();
-            var Units = DB.system_codes.AsNoTracking().Where(x => UnitCodes.Contains(x.data));
+            var Units = DB.subscribepoint_maintains.AsNoTracking().Where(x => UnitCodes.Contains(x.pid));
 
             foreach (var each in dataResult)
             {
                 var queryResult = queryResults.Where(x => x.pid == each.setting_pid).FirstOrDefault();
                 var subscribepoint_name = subscribepoint.Where(m => m.pid == queryResult?.subscribepoint_pid).FirstOrDefault()?.name;
                 var User = Users.Where(x => x.account == each.creator).FirstOrDefault();
-                var Unit = Units.Where(x => x.data == each.unit).FirstOrDefault();
+                var Unit = Units.Where(x => x.pid == each.unit).FirstOrDefault();
                 var equipment = equipments.Where(x => x.pid == queryResult?.sub_pid).FirstOrDefault();
                 result.Add(new PayTreasuryComplex()
                 {
@@ -90,8 +90,8 @@ namespace SRC.DB.Responsibility.PayTreasury
                     apply_name = User?.name_ch,
                     apply_time = each.create_time,
                     already_pay_amount = each.pay_treasury.HasValue ? each.pay_treasury.Value : 0,
-                    stock = equipment != null ? equipment.stock : 0,
-                    unit = Unit?.description
+                    //stock = equipment != null ? equipment.stock : 0,
+                    unit = Unit?.name,
                 });
             }
 
@@ -113,7 +113,7 @@ namespace SRC.DB.Responsibility.PayTreasury
             result.apply_amount = data.apply_amount;
             result.apply_name = User?.name_ch;
             result.already_pay_amount = data.pay_treasury.HasValue ? data.pay_treasury.Value : 0;
-            result.stock = equipment.stock;
+            result.stock = setting.stock;
 
 
             return result;
@@ -134,21 +134,14 @@ namespace SRC.DB.Responsibility.PayTreasury
             }
 
 
-            var setting = DB.min_base_stock_subscribe_settings.AsNoTracking().Where(x => x.pid == data.setting_pid).FirstOrDefault();
+            var setting = DB.min_base_stock_subscribe_settings.Where(x => x.pid == data.setting_pid).FirstOrDefault();
 
             if(setting == null)
             {
                 throw new Exception($"查無基準存量與申購點設定，setting_pid：{data.setting_pid}");
             }
 
-            var equipmentMaintain = DB.equipment_maintains.Where(x => x.pid == setting.sub_pid).FirstOrDefault();
-
-            if(equipmentMaintain == null)
-            {
-                throw new Exception($"查無器材/裝備設定，equipmentMaintain_pid：{setting.sub_pid}");
-            }
-
-            equipmentMaintain.stock = equipmentMaintain.stock + pay_amount;
+            setting.stock = setting.stock - pay_amount;
 
             if (!data.pay_treasury.HasValue)
             {

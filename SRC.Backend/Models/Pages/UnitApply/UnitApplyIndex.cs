@@ -10,6 +10,7 @@
             public string state { get; set; }
             public DateTime? start_time { get; set; }
             public DateTime? end_time { get; set; }
+            public long? unit { get; set; }
         }
 
         public Dictionary<long, string> subscribepointDic { get; set; }

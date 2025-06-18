@@ -23,5 +23,6 @@ namespace SRC.DB.Interfaces.MinBaseStock
         Task Delete(List<long> pids);
 
         bool CheckSameData(long? pid,string type,long sub_pid, long subscribepoint_pid);
+        List<min_base_stock_subscribe_setting> ListStockSetting(List<long> pids);
     }
 }

@@ -10,6 +10,7 @@ namespace SRC.DB.Interfaces.SubscribePoint
     public interface IDF_SubscribePoint
     {
         List<subscribepoint_maintain> ListSubscribePoint(string name, DateTime? start_time, DateTime? end_time, int? page, int? take, out int rowtotal);
+        List<subscribepoint_maintain> ListSubscribePoint(List<long> pids);
         subscribepoint_maintain GetSubscribePoint(long pid);
         Task Create(subscribepoint_maintain data);
         Task Edit(subscribepoint_maintain data);

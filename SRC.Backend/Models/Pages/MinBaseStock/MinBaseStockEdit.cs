@@ -10,5 +10,6 @@ namespace SRC.Backend.Models.Pages.MinBaseStock
         public long? sub_pid { get; set; }
         public long? subscribepoint_pid { get; set; }
         public int? min_base_stock { get; set; }
+        public int? stock { get; set; }
     }
 }

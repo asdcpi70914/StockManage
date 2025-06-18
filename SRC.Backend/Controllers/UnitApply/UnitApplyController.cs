@@ -37,10 +37,11 @@ namespace SRC.Backend.Controllers.UnitApply
         public IActionResult Index()
         {
             UnitApplyIndex Model = new UnitApplyIndex();
+            SRCLoginMeta meta = User.Identity.LoginMeta();
             int page = 1;
             int take = Setting.PaginationTake;
 
-            Model.SearchResultPage = _UnitApplyLogic.Search(new UnitApplyIndex.SearchModel(), page, take);
+            Model.SearchResultPage = _UnitApplyLogic.Search(new UnitApplyIndex.SearchModel() { unit = meta.Unit }, page, take);
             Model.subscribepointDic = DF_SubscribePoint.SubscribepointDic();
 
             return View(Model);
@@ -48,6 +49,10 @@ namespace SRC.Backend.Controllers.UnitApply
 
         public IActionResult Search(UnitApplyIndex.SearchModel condition,int? page,int? take)
         {
+            SRCLoginMeta meta = User.Identity.LoginMeta();
+
+            condition.unit = meta.Unit;
+
             var result = _UnitApplyLogic.Search(condition, page, take);
 
             return PartialView(result);
@@ -131,9 +136,10 @@ namespace SRC.Backend.Controllers.UnitApply
         [FuncAlias(AliasName = "Search,Create,Edit")]
         public IActionResult ChangeType(string type)
         {
+            SRCLoginMeta meta = User.Identity.LoginMeta();
             try
             {
-                var result = DF_UnitApply.DicMinBaseStoc(type);
+                var result = DF_UnitApply.DicMinBaseStoc(type, meta.Unit);
 
                 return Json(result);
             }
@@ -187,7 +193,7 @@ namespace SRC.Backend.Controllers.UnitApply
             {
                 var result = DF_UnitApply.GetRemainingStock(type, pid);
 
-                return Json(result ?? 0);
+                return Json(result);
             }
             catch (Exception ex)
             {

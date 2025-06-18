@@ -32,10 +32,10 @@ namespace SRC.Backend.Models.Brain
                 ErrorMsg.Add("請輸入價格");
             }
 
-            if (!model.stock.HasValue)
-            {
-                ErrorMsg.Add("請輸入庫存量");
-            }
+            //if (!model.stock.HasValue)
+            //{
+            //    ErrorMsg.Add("請輸入庫存量");
+            //}
 
             if (model.Action == ActionMode.ADD)
             {
@@ -63,7 +63,7 @@ namespace SRC.Backend.Models.Brain
                 {
                     name = model.name,
                     price = model.price.Value,
-                    stock = model.stock.Value,
+                    //stock = model.stock.Value,
                     create_time = DateTime.Now,
                     creator = account,
                     state = EQUIPMENT_STATE.STATE.ENABLE.ToString(),
@@ -91,7 +91,7 @@ namespace SRC.Backend.Models.Brain
                     pid = model.pid,
                     name = model.name,
                     price = model.price.Value,
-                    stock = model.stock.Value,
+                    //stock = model.stock.Value,
                     editor = account,
                     edit_time = DateTime.Now
                 };

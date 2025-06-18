@@ -99,6 +99,7 @@ namespace SRC.Backend.Controllers.MinBaseStock
                 sub_pid = data.sub_pid,
                 min_base_stock = data.min_base_stock,
                 type = data.type,
+                stock = data.stock,
                 Action = ActionMode.EDIT
             };
 

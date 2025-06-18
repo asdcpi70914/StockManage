@@ -1,7 +1,7 @@
 ﻿@model BackendUserEdit
 @inject ISelectUI selectUI
 @inject IDF_BackendUser _Backend
-@inject IDF_SystemCode DF_SystemCode
+@inject IDF_SubscribePoint DF_SubscribePoint
 
 @{
     var Units = _Backend.List_Backend_Unit().ToDictionary(x => x.code, x => x.name);
@@ -17,7 +17,7 @@
         action = "edit";
     }
 
-    var ListUnit = DF_SystemCode.List_SystemCode("UNIT");
+    var ListUnit = DF_SubscribePoint.SubscribepointDic();
 }
                         <input name="UserId" type="hidden" value="@Model.UserId" />
 
@@ -55,22 +55,29 @@
                             required />
                         </div>
 
+                        @if(Model.Action == ActionMode.EDIT && Model.Account == "admin")
+                        {
+                            <input type="hidden" id="unit" name="unit" value="@Model.Unit"/>
+                        }
+                        else{
                         <div class="mb-3">
                             <label for="PhoneNumber-field" class="form-label">單位</label>
                             <select id="unit" name="unit" class="form-control">
+                                <option value=""></option>
                                 @foreach(var each in ListUnit){
-                                    if(each.data == Model.Unit)
+                                    if(each.Key == Model.Unit)
                                     {
-                                        <option value="@each.data" selected>@each.description</option>
+                                        <option value="@each.Key" selected>@each.Value</option>
                                     }
                                     else
                                     {
-                                        <option value="@each.data">@each.description</option>
+                <option value="@each.Key">@each.Value</option>
                                     }
                                     
                                 }
                             </select>
                         </div>
+                        }
 <div>
                             <label for="Enabled-field" class="form-label">帳號狀態</label>
                             <select class="form-control" data-trigger id="Enabled-field" name="Enabled">

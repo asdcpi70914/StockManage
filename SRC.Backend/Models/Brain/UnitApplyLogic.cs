@@ -20,9 +20,17 @@ namespace SRC.Backend.Models.Brain
         public UnitApplySearch Search(UnitApplyIndex.SearchModel condition,int? page,int? take)
         {
             UnitApplySearch Model = new UnitApplySearch();
+
+            List<string> States = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(condition.state))
+            {
+                States.Add(condition.state);
+            }
+
             try
             {
-                Model.data = DF_UnitApply.ListUnitApply(condition.type, condition.sub_pid, condition.subscribepoint_pid, condition.start_time, condition.end_time, condition.state, page, take, out int rowtotal);
+                Model.data = DF_UnitApply.ListUnitApply(condition.type, condition.sub_pid, condition.subscribepoint_pid, condition.start_time, condition.end_time, States, condition.unit, page, take, out int rowtotal);
 
                 Model.Pagination = new System.SRCUIPagination(page, take, rowtotal);
 
@@ -35,7 +43,7 @@ namespace SRC.Backend.Models.Brain
             return Model;
         }
 
-        public async Task<bool> Create(UnitApplyEdit model,string account,string unit)
+        public async Task<bool> Create(UnitApplyEdit model,string account,long? unit)
         {
 
             try
@@ -45,7 +53,7 @@ namespace SRC.Backend.Models.Brain
                     setting_pid = model.setting_pid.Value,
                     create_time = DateTime.Now,
                     creator = account,
-                    unit = unit,
+                    unit = unit.HasValue ? unit.Value : 0,
                     apply_amount = model.apply_amount,
                     state = UNITAPPLY_STATE.STATE.INIT.ToString()
                 };

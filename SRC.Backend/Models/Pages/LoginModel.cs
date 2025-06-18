@@ -12,6 +12,9 @@ namespace SRC.Backend.Models.Pages
         [StringLength(40)]
         public string Password { get; set; }
 
+        [StringLength(40)]
+        public string Code { get; set; }
+
         [JsonIgnore]
         public string ResultMessage { get; set; }
 

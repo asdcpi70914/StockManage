@@ -66,6 +66,7 @@ namespace SRC.DB.Responsibility.MinBaseStock
                 min_base_stock = x.min_base_stock,
                 subscribepoint = subscribepoint.Where(m => m.pid == x.subscribepoint_pid).FirstOrDefault()?.name,
                 type = x.type,
+                stock = x.stock
 
             }).ToList();
 
@@ -136,6 +137,11 @@ namespace SRC.DB.Responsibility.MinBaseStock
                 return DB.min_base_stock_subscribe_settings.AsNoTracking().Where(x => x.type == type && x.sub_pid == sub_pid && x.subscribepoint_pid == subscribepoint_pid).Any();
             }
             
+        }
+
+        public List<min_base_stock_subscribe_setting> ListStockSetting(List<long> pids)
+        {
+            return DB.min_base_stock_subscribe_settings.AsNoTracking().Where(x => pids.Contains(x.sub_pid)).ToList();
         }
     }
 }

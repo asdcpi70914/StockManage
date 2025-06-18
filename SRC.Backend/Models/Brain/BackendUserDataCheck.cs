@@ -56,11 +56,6 @@ namespace SRC.Backend.Models.Brain
                 chkMsg += $"{UIMessage.SYS.AccountNameEmpty},";
             }
 
-            if (string.IsNullOrWhiteSpace(model.Unit))
-            {
-                chkMsg += $"{UIMessage.SYS.UnitEmpty},";
-            }
-
             InnerMessage = chkMsg;
             return chkMsg == string.Empty;
 

@@ -55,7 +55,7 @@
                                             <tr id="acctount_tr_@(each.pid)">
                                                 <td>@(new MINBASESTOCK_TYPE(each.type).Desc)</td>
                                                 <td>@each.name</td>
-                                                <td>@each.stock</td>
+                                                <td>@* @each.stock *@</td>
                                                 <td>@(each.create_time.ToString("yyyy年MM月dd日"))</td>
                                                 <td>
                                                     <div class="d-flex gap-2">

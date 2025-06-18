@@ -16,6 +16,8 @@ namespace SRC.DB.Models.Complex
 
         public string sub_name { get; set; }
 
+        public int stock { get; set; }
+
         public int min_base_stock { get; set; }
 
         public string state { get; set; } = null!;

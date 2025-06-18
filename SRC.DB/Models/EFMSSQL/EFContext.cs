@@ -127,9 +127,6 @@ public partial class EFContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.password_hash).HasMaxLength(256);
             entity.Property(e => e.phone_number).HasMaxLength(30);
-            entity.Property(e => e.unit)
-                .HasMaxLength(20)
-                .IsUnicode(false);
             entity.Property(e => e.verification_code)
                 .HasMaxLength(10)
                 .IsFixedLength();
@@ -174,9 +171,6 @@ public partial class EFContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.password_hash).HasMaxLength(256);
             entity.Property(e => e.phone_number).HasMaxLength(30);
-            entity.Property(e => e.unit)
-                .HasMaxLength(5)
-                .IsUnicode(false);
             entity.Property(e => e.verification_code)
                 .HasMaxLength(10)
                 .IsFixedLength();
@@ -450,9 +444,6 @@ public partial class EFContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.pay_treasury).HasComment("繳庫數量");
             entity.Property(e => e.state)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.unit)
                 .HasMaxLength(50)
                 .IsUnicode(false);
         });

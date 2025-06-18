@@ -22,7 +22,14 @@ namespace SRC.Backend.Models.Brain
             EquipmentApplySearch Model = new EquipmentApplySearch();
             try
             {
-                Model.data = DF_UnitApply.ListUnitApply(condition.type, condition.sub_pid, condition.subscribepoint_pid, condition.start_time, condition.end_time, condition.state, page, take, out int rowtotal);
+                List<string> States = new List<string>();
+
+                if (!string.IsNullOrWhiteSpace(condition.state))
+                {
+                    States.Add(condition.state);
+                }
+
+                Model.data = DF_UnitApply.ListUnitApply(condition.type, condition.sub_pid, condition.subscribepoint_pid, condition.start_time, condition.end_time, States, null, page, take, out int rowtotal);
 
                 Model.Pagination = new System.SRCUIPagination(page, take, rowtotal);
 

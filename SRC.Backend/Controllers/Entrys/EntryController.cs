@@ -15,6 +15,8 @@ using SRC.DB.Models.EFMSSQL;
 using System.DirectoryServices;
 using System.Net;
 using System.Security.Claims;
+using System.Drawing;
+using Serilog;
 
 namespace SRC.Backend.Controllers.Entrys
 {
@@ -75,9 +77,20 @@ namespace SRC.Backend.Controllers.Entrys
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
+            var vaildCode = "";
 
+            if (TempData["code"] == null)
+            {
+                SLog.Fatal($"驗證碼資料異常，TempData：{TempData["code"]}");
+                ViewData["LoginMessage"] = "驗證碼錯誤";
+                return View("Login");
+            }
+            else
+            {
+                vaildCode = TempData["code"].ToString();
+            }
 
-            bool success = _Login.LoginFunc(model.Account, model.Password, SystemCodeDF);
+            bool success = _Login.LoginFunc(model.Account, model.Password,model.Code,vaildCode, SystemCodeDF);
 
 
             if (!success)
@@ -99,7 +112,7 @@ namespace SRC.Backend.Controllers.Entrys
                 UserId = user.user_id,
                 UserName = user.name_ch,
                 RoleCode = roleCode,
-                Unit = user.unit ?? ""
+                Unit = user.unit
             });
 
             var authProperties = new AuthenticationProperties
@@ -115,6 +128,30 @@ namespace SRC.Backend.Controllers.Entrys
                 authProperties);
 
             return RedirectToAction("Index", "Home");
+        }
+        public IActionResult GetValidateCode()
+        {
+            byte[] data = null;
+            string code = _Login.RandomCode(5);
+            TempData["code"] = code;
+            //定義一個畫板
+            MemoryStream ms = new MemoryStream();
+            using (Bitmap map = new Bitmap(100, 40))
+            {
+                //畫筆,在指定畫板畫板上畫圖
+                //g.Dispose();
+                using (Graphics g = Graphics.FromImage(map))
+                {
+                    g.Clear(Color.White);
+                    g.DrawString(code, new Font("黑體", 18.0F), Brushes.Blue, new Point(10, 8));
+                    //繪製干擾線(數字代表幾條)
+                    _Login.PaintInterLine(g, 5, map.Width, map.Height);
+                }
+
+                map.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            }
+            data = ms.GetBuffer();
+            return File(data, "image/jpeg");
         }
 
         [Authorize]

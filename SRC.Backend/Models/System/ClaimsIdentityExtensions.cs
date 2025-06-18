@@ -28,7 +28,18 @@ namespace SRC.Backend.Models.System
             meta.UserId = new Guid(((ClaimsIdentity)identity).GetClaim(UserClaims.ClaimsKey.USERID).Value);
             meta.Account = ((ClaimsIdentity)identity).GetClaim(UserClaims.ClaimsKey.ACCOUNT).Value;
             meta.UserName = ((ClaimsIdentity)identity).GetClaim(UserClaims.ClaimsKey.USER_NAME).Value;
-            meta.Unit = ((ClaimsIdentity)identity).GetClaim(UserClaims.ClaimsKey.Unit).Value;
+            var unit = ((ClaimsIdentity)identity).GetClaim(UserClaims.ClaimsKey.Unit).Value;
+
+            if (!string.IsNullOrWhiteSpace(unit))
+            {
+                meta.Unit = Convert.ToInt64(unit);
+            }
+            else
+            {
+                meta.Unit = null;
+            }
+
+            
             string roleCode = ((ClaimsIdentity)identity).GetClaim(UserClaims.ClaimsKey.ROLE_CODE).Value;
 
             if (!string.IsNullOrWhiteSpace(roleCode))

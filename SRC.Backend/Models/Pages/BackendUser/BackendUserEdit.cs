@@ -15,7 +15,7 @@ namespace SRC.Backend.Models.Pages.BackendUser
         public string? Email { get; set; }
         public bool EmailConfirmed { get; set; }
         public DateTime? LockoutEnd { get; set; }
-        public string Unit { get; set; }
+        public long? Unit { get; set; }
         public bool Enabled { get; set; }
         public int AccessFailedCount { get; set; }
         public Guid? Creator { get; set; }

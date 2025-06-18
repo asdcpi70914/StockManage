@@ -1,5 +1,6 @@
 ﻿@model UnitApplySearch
 @inject MenusAuth Muens
+@inject IDF_SystemCode DF_SystemCode
 @{
     string controller = "UnitApply";
     string editAction = "Edit";
@@ -51,6 +52,8 @@
                 Controller = controller, //到哪一個controller
                 OKButtonMessage = "確定, 我要撤銷！"
             };
+
+    var Units = DF_SystemCode.List_SystemCode("UNIT");
 }
 
 
@@ -94,7 +97,7 @@
                                     </th>
                                     <th>裝備/器材名稱</th>
                                     <th>申請數量</th>
-                                    <th>申購點</th>
+                                    <th>申購單位</th>
                                     <th>建立時間</th>
                                     <th>狀態</th>
                                     <th>操作</th>
@@ -107,6 +110,7 @@
                                         int idx = 0;
                                         foreach (var each in Model.data)
                                         {
+                                            var Unit = Units.Where(x => x.data == each.unit).FirstOrDefault();
                                             idx += 1;
                                             <tr id="acctount_tr_@(each.pid)">
                                                 <th scope="row">
@@ -127,7 +131,7 @@
                                                 </th>
                                                 <td>@each.sub_name</td>
                                                 <td>@each.apply_amount</td>
-                                                <td>@each.subscribepoint</td>
+                                                <td>@each.unit</td>
                                                 <td>@(each.create_time.ToString("yyyy年MM月dd日"))</td>
                                                 <td>
                                                     @{

@@ -1,9 +1,14 @@
 ﻿@model ExistingStockSearch
 @inject MenusAuth Muens
+@inject IDF_MinBaseStock DF_MinBaseStock
 @{
     string controller = "ExistingStock";
 
     SRCLoginMeta meta = User.Identity.LoginMeta();
+
+    var pids = Model.Data.Select(x => x.pid).ToList();
+
+    var Settings = DF_MinBaseStock.ListStockSetting(pids);
 }
 
 <div id="aoeDiv"></div>
@@ -40,10 +45,11 @@
                                         int idx = 0;
                                         foreach (var each in Model.Data)
                                         {
+                                            var Setting = Settings.Where(x => x.sub_pid == each.pid).ToList();
                                             idx += 1;
                                             <tr id="acctount_tr_@(each.pid)">
                                                 <td>@each.name</td>
-                                                <td>@each.stock</td>
+                                                <td>@(Setting.Sum(x => x.stock))</td>
                                                 <td>@(each.create_time.ToString("yyyy年MM月dd日"))</td>
                                             </tr>
                                         }

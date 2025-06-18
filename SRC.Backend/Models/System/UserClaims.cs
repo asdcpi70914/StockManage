@@ -24,7 +24,7 @@ namespace SRC.Backend.Models.System
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimsKey.ACCOUNT, user.Account),
                 new Claim(ClaimsKey.USER_NAME, user.UserName),
-                new Claim(ClaimsKey.Unit, user.Unit),
+                new Claim(ClaimsKey.Unit, (user.Unit.HasValue ? user.Unit.Value.ToString() : "")),
                 new Claim(ClaimsKey.ROLE_CODE, string.Join(",",user.RoleCode)),
                 //new Claim(ClaimTypes.Email, user.Email),
                 

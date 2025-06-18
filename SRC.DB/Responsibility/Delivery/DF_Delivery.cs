@@ -73,13 +73,10 @@ namespace SRC.DB.Responsibility.Delivery
             var AccountList = dataResult.Select(x => x.creator).ToList();
             var Users = DB.backend_users.AsNoTracking().Where(x => AccountList.Contains(x.account)).ToList();
 
-            var SystemCodeList = DB.system_codes.AsNoTracking().Where(x => x.code == "UNIT").ToList();
-
             foreach (var each in dataResult)
             {
                 var queryResult = queryResults.Where(x => x.pid == each.setting_pid).FirstOrDefault();
                 var User = Users.Where(x => x.account == each.creator).FirstOrDefault();
-                var SystemCode = SystemCodeList.Where(x => x.data == each.unit).FirstOrDefault();
                 result.Add(new UnitApplyComplex()
                 {
                     pid = each.pid,
@@ -89,7 +86,7 @@ namespace SRC.DB.Responsibility.Delivery
                     apply_amount = each.apply_amount,
                     create_time = each.create_time,
                     state = each.state,
-                    unit = SystemCode?.description,
+                    unit = subscribepoint.Where(m => m.pid == each.unit).FirstOrDefault()?.name,
                     Apply_Name = User?.name_ch
                 });
             }
@@ -119,7 +116,7 @@ namespace SRC.DB.Responsibility.Delivery
 
             var sub = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
             result.sub_name = $"{sub.name}【{subscribepoint?.name}】";
-            result.RemainingStock = sub.stock;
+            result.RemainingStock = setting.stock;
 
             var User = DB.backend_users.AsNoTracking().Where(x => x.account == data.creator).FirstOrDefault();
 
@@ -142,18 +139,11 @@ namespace SRC.DB.Responsibility.Delivery
                 throw new Exception($"查無出貨作業資料，pid：{pid}");
             }
 
-            var setting = await DB.min_base_stock_subscribe_settings.AsNoTracking().Where(x => x.pid == data.setting_pid).FirstOrDefaultAsync();
+            var setting = await DB.min_base_stock_subscribe_settings.Where(x => x.pid == data.setting_pid).FirstOrDefaultAsync();
 
             if(setting == null)
             {
                 throw new Exception($"查無基準存量與申購點設定資料，setting：{data.setting_pid}");
-            }
-
-            var equipmentMaintain = await DB.equipment_maintains.Where(x => x.pid == setting.sub_pid).FirstOrDefaultAsync();
-
-            if (equipmentMaintain == null)
-            {
-                throw new Exception($"查無裝備/器材資料，sub_pid：{setting.sub_pid}");
             }
 
             unit_apply_review_log log = new unit_apply_review_log()
@@ -167,7 +157,7 @@ namespace SRC.DB.Responsibility.Delivery
             };
 
             data.state = UNITAPPLY_STATE.STATE.DELIVERY.ToString();
-            equipmentMaintain.stock = equipmentMaintain.stock - data.apply_amount;
+            setting.stock = setting.stock + data.apply_amount;
 
             await DB.unit_apply_review_logs.AddAsync(log);
 

@@ -13,8 +13,6 @@ public partial class equipment_maintain
 
     public decimal price { get; set; }
 
-    public int stock { get; set; }
-
     public string creator { get; set; } = null!;
 
     public DateTime create_time { get; set; }

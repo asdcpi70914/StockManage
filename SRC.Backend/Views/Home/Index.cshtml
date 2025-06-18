@@ -1,15 +1,274 @@
-﻿@inject SysAppsetting setting
+﻿@model HomeIndex
+@inject SysAppsetting setting
+@inject IDF_SystemCode DF_SystemCode
+
+<style>
+    .center-card {
+        display: flex;
+        justify-content: center;
+        gap: 80px
+    }
+
+    .card1 {
+        height: auto;
+        padding: 24px 24px 32px 24px;
+        border-radius: 12px;
+        gap: 24px;
+        background: radial-gradient(100% 577.7% at 99.94% 0%, #D4CDFA 0%, #7B68EE 100%);
+    }
+
+    .card2 {
+        height: auto;
+        padding: 24px 24px 32px 24px;
+        border-radius: 12px;
+        gap: 24px;
+        background: radial-gradient(100.13% 578.82% at 100.06% 0%, #A3E2D0 0%, #45CB86 100%);
+    }
+
+    .card3 {
+        height: auto;
+        padding: 24px 24px 32px 24px;
+        border-radius: 12px;
+        gap: 24px;
+        background: radial-gradient(100% 577.7% at 100% 0%, #fad8b1 0%, #ffa136 100%);
+    }
+
+    .card4 {
+        height: auto;
+        padding: 24px 24px 32px 24px;
+        border-radius: 12px;
+        gap: 24px;
+        background: radial-gradient(100% 577.7% at 100% 0%, #FBEAB3 0%, #edbd3c 100%);
+    }
+
+    .card5 {
+        height: auto;
+        padding: 24px 24px 32px 24px;
+        border-radius: 12px;
+        gap: 24px;
+        background: radial-gradient(100% 577.7% at 100% 0%, #FFD9EC 0%, #FF95CA 100%);
+    }
+
+    .card6 {
+        height: 216px;
+        padding: 24px 24px 32px 24px;
+        border-radius: 12px;
+        gap: 24px;
+        background: radial-gradient(100% 577.7% at 100% 0%, #b8e6ff 0%, #299cdb 100%);
+    }
+
+    .card7 {
+        height: auto;
+        padding: 24px 24px 32px 24px;
+        border-radius: 12px;
+        gap: 24px;
+        background: radial-gradient(100% 577.7% at 100% 0%, #cffabe 0%, #71fc3a 100%);
+    }
+
+    .card8 {
+        height: auto;
+        padding: 24px 24px 32px 24px;
+        border-radius: 12px;
+        gap: 24px;
+        background: radial-gradient(100% 577.7% at 100% 0%, #ffd6d6 0%, #ff7373 100%);
+    }
+
+    .card-text-line1 {
+        height: auto;
+        justify-content: space-between;
+    }
+
+    .card-text-line2 {
+        height: auto;
+        gap: 8px;
+    }
+
+    .header-text {
+        font-family: Noto Sans TC;
+        font-size: 32px;
+        font-weight: 500;
+        line-height: 48px;
+        letter-spacing: 0.05em;
+        text-align: left;
+    }
+
+    .card-text-font {
+        font-family: Noto Sans TC;
+        font-size: 56px;
+        font-weight: 700;
+        line-height: 72px;
+        letter-spacing: 0.005em;
+        text-align: left;
+        color: #FFFFFF;
+    }
+
+    .card-text-font2 {
+        font-family: Noto Sans TC;
+        font-size: 21px;
+        font-weight: 500;
+        line-height: 32px;
+        letter-spacing: 0.005em;
+        text-align: left;
+        color: #FFFFFF;
+    }
+
+    .card-text-font3 {
+        font-family: Noto Sans TC;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 24px;
+        letter-spacing: 0.01em;
+        text-align: left;
+        color: #FFFFFF;
+    }
+
+    .card-column {
+        padding: 24px 24px 32px 24px;
+        border-radius: 16px;
+        gap: 24px;
+    }
+
+    .card-column-text {
+        font-family: Noto Sans TC;
+        font-size: 21px;
+        font-weight: 700;
+        line-height: 32px;
+        letter-spacing: 0.03em;
+        text-align: left;
+    }
+
+    .card-table {
+        padding: 32px 24px 32px 24px;
+        border-radius: 16px;
+        gap: 24px;
+    }
+
+    .th-radius-start {
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+    }
+
+    .th-radius-end {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    .table-header-text {
+        font-family: Noto Sans TC;
+        font-size: 21px;
+        font-weight: 700;
+        line-height: 32px;
+        letter-spacing: 0.03em;
+        text-align: left;
+    }
+</style>
+@{
+    var MidDataGroup = Model.MidData.GroupBy(x => x.subscribepoint_name).ToList();
+
+    SRCLoginMeta meta = User.Identity.LoginMeta();
+}
 
 
 <div class="text-center">
 
 </div>
 
+@{
+    var row = 1;
+    if (Model.UpData.Count() % 4 != 0)
+    {
+        row = (Model.UpData.Count() / 4) + 1;
+    }
+    else
+    {
+        row = (Model.UpData.Count() / 4);
+    }
+}
+
+@for (var i = 0; i < row; i++)
+{
+    int index = 1;
+    <div class="row">
+        @for (var k = i * 4; k < Model.UpData.Count(); k++)
+        {
+            if(index > 8)
+            {
+                index = 1;
+            }
+
+            <div class="col-xl-3">
+                <div class="card card@(index)">
+                    <div class="card-text-line1" style="display:flex">
+                        <span class="card-text-font">@Model.UpData[k].Key</span>
+                    </div>
+                    <div class="card-text-line2">
+                        @foreach(var item in Model.UpData[k]){
+                            <div class="card-text-font2" style="display:flex;justify-content:space-between">
+                                <span>@item.equipment_name</span><span>@(item.stock - item.min_base_stock)</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            index++;
+        }
+    </div>
+}
+
+@if (meta.Account == setting.AdminAccount)
+{
+    <partial name="_AdminChart" for="@MidDataGroup" />
+}
+else
+{
+    <partial name="_NormalChart" for="@Model.MidData" />
+}
+
+
 <div class="row">
-
-
+    <div class="col-xl-12">
+        <div class="card card-table">
+            <div class="card-body">
+                <div class="align-items-center d-flex justify-content-between" style="border-color:white">
+                    <h4 class="table-header-text">單位出貨總金額前十名</h4>
+                </div><!-- end card header -->
+                <div class="card-body">
+                    <div id="customerList">
+                        <div class="table-responsive table-card mt-3 mb-1" style="/*overflow:auto;height:250px;*/">
+                            <table class="table table-sm nowrap dt-responsive align-middle table-hover" id="search-table-lv1">
+                                <thead class="table-light" style="border-color:white">
+                                    <tr>
+                                        <th class="th-radius-start" style="padding:16px 16px 16px 16px">名次</th>
+                                        <th style="padding:16px 16px 16px 16px">單位名稱</th>
+                                        <th style="padding:16px 16px 16px 16px" class="th-radius-end">金額</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="list form-check-all">
+                                    @if (Model.DownData != null)
+                                        @if (Model.DownData.Count() > 0)
+                                        {
+                                            @for (int i = 0; i < 10 && i < Model.DownData.Count(); i++)
+                                            {
+                                                <tr>
+                                                    <td>@(i + 1)</td>
+                                                    <td>@Model.DownData[i].unit</td>
+                                                    <td>@Model.DownData[i].amount</td>
+                                                </tr>
+                                            }
+                                        }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div><!-- end card -->
+            </div>
+        </div>
+    </div>
 </div>
 
 @section scripts{
+    <script src="~/assets/libs/apexcharts/apexcharts.min.js"></script>
+
 
 }

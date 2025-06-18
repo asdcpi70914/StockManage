@@ -1,0 +1,94 @@
+﻿@model List<HomeComplex.HomeMidData>
+@{
+    var series = Model.Select(x => x.stock).ToList();
+    var xaxis = Model.Select(x => x.equipment_name).ToList();
+}
+
+
+
+
+
+
+<div class="col-xl-12">
+    <div class="card card-table">
+        <div class="card-body">
+            <div class="align-items-center d-flex justify-content-between" style="border-color:white">
+                <h4 class="table-header-text">庫存比例</h4>
+            </div><!-- end card header -->
+
+            <div class="card-body">
+                <div id="customerList">
+                    <div class="card-body">
+                        <div id="apexchart"
+                             data-colors='["--vz-primary", "--vz-success", "--vz-warning", "--vz-danger", "--vz-info"]'
+                             class="apex-charts" dir="ltr"></div>
+                    </div>
+                </div>
+            </div><!-- end card -->
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        var seriesArray = @Json.Serialize(series);
+        var labelsArray = @Json.Serialize(xaxis);
+        var options = {
+            series: [{
+                name:"",
+                data: seriesArray
+            }],
+            chart: {
+                height: 350,
+                type: 'bar',
+                events: {
+                    click: function (chart, w, e) {
+                        // console.log(chart, w, e)
+                    }
+                }
+            },
+            colors: ["#4cb3fc", "#ffb3b3", "#EA8841", "#D29E44", "#E2CB9C"],
+            plotOptions: {
+                bar: {
+                    columnWidth: '45%',
+                    distributed: true,
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return val;
+                }
+            },
+            legend: {
+                show: false
+            },
+            xaxis: {
+                categories: labelsArray,
+                labels: {
+                    style: {
+                        colors: ["#4cb3fc", "#ffb3b3", "#EA8841", "#D29E44", "#E2CB9C"],
+                        fontSize: '12px'
+                    }
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#apexchart"), options);
+        chart.render();
+    });
+</script>

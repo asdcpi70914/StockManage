@@ -8,9 +8,9 @@ namespace SRC.DB.Interfaces.Users
 
         List<backend_user> SearchRoleInUser(string account, string userName, string email, int? page, int? take, out int rowCount);
 
-        bool Create(backend_user user, backend_dept dept);
+        bool Create(backend_user user);
         bool UpdatePassword(string account, Guid userID, string oldPwd, string newPwd);
-        bool UpdateInfo(long pid, backend_user newInfo, backend_dept backend_Dept);
+        bool UpdateInfo(long pid, backend_user newInfo);
 
         Guid? ForgetPassword(string account, string email, string newPwd);
         backend_user? GetUser(long pid);
@@ -38,7 +38,7 @@ namespace SRC.DB.Interfaces.Users
 
         backend_dept GetBackendDept(long backend_user_pid);
 
-        List<backend_user> ListBackendUserForUnit(string unit);
+        List<backend_user> ListBackendUserForUnit(long unit);
 
         #region Backend_Unit
         List<backend_unit> List_Backend_Unit();

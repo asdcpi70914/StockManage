@@ -6,18 +6,10 @@ namespace SRC.Backend.Models.Config
     {
 
         public int PaginationTake { get; set; }
-
-        public string FileUploadPath { get; set; }
-        public string FileServerUrl { get; set; }
-        public string EmailTemplatePath { get; set; }
-        public string ADAccount { get; set; }
-        public string ADPassword { get; set; }
+        public string AdminAccount { get; set; }
         public string ADServer { get; set; }
         public int ADPort { get; set; }
         public bool IsSSL { get; set; }
-        public string DirectoryChar { get; set; }
-        public string[] CanShowOnWindows { get; set; }
-        public string ExcelPath { get; set; }
         public void InitFolder()
         {
 

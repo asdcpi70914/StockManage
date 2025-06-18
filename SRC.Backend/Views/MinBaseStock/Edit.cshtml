@@ -3,12 +3,15 @@
 @inject IDF_MinBaseStock DF_MinBaseStock
 @{
     var action = "add";
+    var ReadOnly = "";
+    var styleColor = "";
 
     if (Model.Action == ActionMode.EDIT)
     {
         action = "edit";
+        ReadOnly = "readonly";
+        styleColor = "background-color:gainsboro";
     }
-
 
     SRCLoginMeta meta = User.Identity.LoginMeta();
     var DropDownSelect = new MINBASESTOCK_TYPE().All();
@@ -66,6 +69,11 @@
         </select>
     }
     
+</div>
+
+<div class="mb-3">
+    <label for="stock" class="form-label mustkeyin">庫存</label>
+    <input type="text" id="stock" name="stock" value="@Model.stock" maxlength="100" placeholder="請輸入庫存數量" class="form-control" style="@(styleColor)" @(ReadOnly) required />
 </div>
 
 <div class="mb-3">

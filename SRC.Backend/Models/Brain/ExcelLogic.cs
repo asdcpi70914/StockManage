@@ -5,7 +5,9 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Spreadsheet;
 using SRC.Backend.Models.Config;
+using SRC.DB.Interfaces.MinBaseStock;
 using SRC.DB.Interfaces.Settings;
+using SRC.DB.Interfaces.SubscribePoint;
 using SRC.DB.Interfaces.Users;
 using SRC.DB.Models.Complex;
 using SRC.DB.Models.EFMSSQL;
@@ -525,16 +527,34 @@ namespace SRC.Backend.Models.Brain
             return null;
         }
 
-        public byte[] ExistingStockReport(List<equipment_maintain> Data)
+        public byte[] ExistingStockReport(List<equipment_maintain> Data,IDF_MinBaseStock DF_MinBaseStock,IDF_SubscribePoint DF_SubscribePoint, long? unit)
         {
             try
             {
                 SpreadsheetDocument xml = null;
                 SheetData dataPart = null;
 
-                string[] title = new string[] {
-                   "器材/裝備名稱", "剩餘庫存","建立時間"
+                var pids = Data.Select(x => x.pid).ToList();
+
+                var Settings = DF_MinBaseStock.ListStockSetting(pids);
+
+                if (unit.HasValue)
+                {
+                    Settings = Settings.Where(x => x.subscribepoint_pid == unit.Value).ToList();
+                }
+
+                var SubscribePoints = DF_SubscribePoint.ListSubscribePoint(Settings.Select(x => x.subscribepoint_pid).ToList());
+
+                List<string> title = new List<string>() {
+                   "器材/裝備名稱"
                 };
+
+                foreach(var each in SubscribePoints)
+                {
+                    title.Add(each.name);
+                }
+
+                title.Add("總庫存");
 
                 using (MemoryStream ms = new MemoryStream())
                 {
@@ -561,11 +581,18 @@ namespace SRC.Backend.Models.Brain
                         {
                             for (int i = 0; i < Data.Count(); i++)
                             {
+                                
                                 cellIdx = 0;
                                 dataPart.Append(row = new Row());
                                 row.InsertAt(StringCell(Data[i].name), cellIdx++);
-                                row.InsertAt(StringCell(Data[i].stock.ToString()), cellIdx++);
-                                row.InsertAt(StringCell(Data[i].create_time.ToString("yyyy年MM月dd日")), cellIdx++);
+                                foreach(var item in SubscribePoints)
+                                {
+                                    var Setting = Settings.Where(x => x.sub_pid == Data[i].pid && x.subscribepoint_pid == item.pid).FirstOrDefault();
+
+                                    row.InsertAt(StringCell(Setting == null ? "0" : Setting.stock.ToString()), cellIdx++);
+                                }
+
+                                row.InsertAt(StringCell(Settings.Where(x => x.sub_pid == Data[i].pid).Sum(x => x.stock).ToString()), cellIdx++);
                             }
                         }
                     }

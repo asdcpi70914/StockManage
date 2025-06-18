@@ -36,7 +36,7 @@ namespace SRC.DB.Responsibility.Users
         }
 
 
-        public bool Create(backend_user user, backend_dept dept)
+        public bool Create(backend_user user)
         {
 
             if (DB.backend_users.Where(m => m.account == user.account).Count() > 0)
@@ -96,7 +96,7 @@ namespace SRC.DB.Responsibility.Users
         }
 
 
-        public bool UpdateInfo(long pid, backend_user newInfo, backend_dept backend_Dept)
+        public bool UpdateInfo(long pid, backend_user newInfo)
         {
             backend_user? user =
                DB.backend_users
@@ -106,18 +106,6 @@ namespace SRC.DB.Responsibility.Users
                    ).FirstOrDefault();
 
             if (user == null) throw new Exception("查無使用者資料");
-
-            if (!string.IsNullOrWhiteSpace(newInfo.ad_account) && DB.backend_users.Where(x => x.ad_account == newInfo.ad_account && x.pid != user.pid).Count() > 0)
-            {
-                throw new Exception("AD連動帳號已存在");
-            }
-
-            backend_dept? dept = DB.backend_depts.Where(x => x.backend_user_pid == pid).FirstOrDefault();
-
-            if (dept != null)
-            {
-                DB.backend_depts.Remove(dept);
-            }
 
             user.name_en = newInfo.name_en;
             user.name_ch = newInfo.name_ch;
@@ -436,7 +424,7 @@ namespace SRC.DB.Responsibility.Users
             return DB.backend_units.AsNoTracking().ToList();
         }
 
-        public List<backend_user> ListBackendUserForUnit(string unit)
+        public List<backend_user> ListBackendUserForUnit(long unit)
         {
             return DB.backend_users.AsNoTracking().Where(x => x.unit == unit).ToList();
         }

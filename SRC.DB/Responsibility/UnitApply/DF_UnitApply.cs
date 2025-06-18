@@ -19,10 +19,15 @@ namespace SRC.DB.Responsibility.UnitApply
         {
         }
 
-        public List<UnitApplyComplex> ListUnitApply(string type, long? setting_pid, long? subscribepoint_pid, DateTime? start_time, DateTime? end_time, string state, int? page, int? take, out int rowtotal)
+        public List<UnitApplyComplex> ListUnitApply(string type, long? setting_pid, long? subscribepoint_pid, DateTime? start_time, DateTime? end_time, List<string> state, long? unit, int? page, int? take, out int rowtotal)
         {
             IQueryable<unit_apply> data = DB.unit_applies.AsNoTracking();
             IQueryable<min_base_stock_subscribe_setting> query = DB.min_base_stock_subscribe_settings.AsNoTracking();
+
+            if (unit.HasValue)
+            {
+                data = data.Where(x => x.unit == unit);
+            }
 
             if (!string.IsNullOrWhiteSpace(type))
             {
@@ -51,9 +56,9 @@ namespace SRC.DB.Responsibility.UnitApply
                 data = data.Where(x => x.create_time <= end_time.Value.AddDays(1).AddSeconds(-1));
             }
 
-            if (!string.IsNullOrWhiteSpace(state))
+            if (state != null && state.Count() > 0)
             {
-                data = data.Where(x => x.state == state);
+                data = data.Where(x => state.Contains(x.state));
             }
 
             var queryResultPids = queryResults.Select(x => x.pid).ToList();
@@ -84,7 +89,7 @@ namespace SRC.DB.Responsibility.UnitApply
                     apply_amount = each.apply_amount,
                     create_time = each.create_time,
                     state = each.state,
-                    unit = each.unit,
+                    unit = subscribepoint.Where(m => m.pid == each?.unit).FirstOrDefault()?.name,
                     Apply_Name = each.creator,
                 });
             }
@@ -112,7 +117,7 @@ namespace SRC.DB.Responsibility.UnitApply
             var RemainingStock = 0;
 
             var sub = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
-            result.RemainingStock = sub.stock;
+            //result.RemainingStock = sub.stock;
 
             result.pid = data.pid;
             result.apply_amount = data.apply_amount;
@@ -146,7 +151,7 @@ namespace SRC.DB.Responsibility.UnitApply
 
             var sub = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
             result.sub_name = $"{sub.name}【{subscribepoint?.name}】";
-            result.RemainingStock = sub.stock;
+            result.RemainingStock = setting.stock;
 
             result.pid = data.pid;
             result.apply_amount = data.apply_amount;
@@ -159,6 +164,31 @@ namespace SRC.DB.Responsibility.UnitApply
 
         public async Task Create(unit_apply data)
         {
+            var setting = await DB.min_base_stock_subscribe_settings.AsNoTracking().Where(x => x.pid == data.setting_pid).FirstOrDefaultAsync();
+
+            if(setting == null)
+            {
+                throw new Exception($"查無裝備存量與申購點設定，setting_pid：{data.setting_pid}");
+            }
+
+
+            var equipmentData = await DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefaultAsync();
+
+            if (equipmentData == null)
+            {
+                throw new Exception($"查無裝備/器材設定，equipmentData：{equipmentData.pid}");
+            }
+
+            //if(equipmentData.stock < data.apply_amount)
+            //{
+            //    throw new Exception($"申請數量超過庫存數量，請重新確認");
+            //}
+
+            if(data.creator == "admin")
+            {
+                data.unit = setting.subscribepoint_pid;            
+            }
+
             await DB.unit_applies.AddAsync(data);
 
             await DB.SaveChangesAsync();
@@ -267,9 +297,19 @@ namespace SRC.DB.Responsibility.UnitApply
             await DB.SaveChangesAsync();
         }
 
-        public Dictionary<long, string> DicMinBaseStoc(string type)
+        public Dictionary<long, string> DicMinBaseStoc(string type, long? unit)
         {
-            List<min_base_stock_subscribe_setting> data = DB.min_base_stock_subscribe_settings.AsNoTracking().Where(x => x.type == type).ToList();
+            List<min_base_stock_subscribe_setting> data = new List<min_base_stock_subscribe_setting>();
+            if (unit.HasValue)
+            {
+                data = DB.min_base_stock_subscribe_settings.AsNoTracking().Where(x => x.type == type && x.subscribepoint_pid == unit).ToList();
+            }
+            else
+            {
+                data = DB.min_base_stock_subscribe_settings.AsNoTracking().Where(x => x.type == type).ToList();
+            }
+
+
             var SubscribepointPids = data.Select(x => x.subscribepoint_pid).ToList();
             var SubPids = data.Select(x => x.sub_pid).ToList();
             var SubscribepointList = DB.subscribepoint_maintains.AsNoTracking().Where(x => SubscribepointPids.Contains(x.pid)).ToList();
@@ -291,18 +331,9 @@ namespace SRC.DB.Responsibility.UnitApply
             return result;
         }
 
-        public int? GetRemainingStock(string type, long pid)
+        public min_base_stock_subscribe_setting GetRemainingStock(string type, long pid)
         {
-            var SettingPid = DB.min_base_stock_subscribe_settings.AsNoTracking().Where(x => x.pid == pid).FirstOrDefault();
-
-            if (SettingPid != null)
-            {
-                return DB.equipment_maintains.AsNoTracking().Where(x => x.pid == SettingPid.sub_pid).FirstOrDefault()?.stock;
-            }
-            else
-            {
-                return null;
-            }
+            return DB.min_base_stock_subscribe_settings.AsNoTracking().Where(x => x.pid == pid).FirstOrDefault();
         }
 
         public List<UnitApplyReviewLogComplex> ListReviewLogs(long pid)

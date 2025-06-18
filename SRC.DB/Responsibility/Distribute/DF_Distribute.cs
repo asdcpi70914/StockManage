@@ -84,7 +84,7 @@ namespace SRC.DB.Responsibility.Distribute
                     apply_amount = each.apply_amount,
                     create_time = each.create_time,
                     state = each.state,
-                    unit = each.unit,
+                    unit = subscribepoint.Where(m => m.pid == each.unit).FirstOrDefault()?.name,
                 });
             }
 
@@ -113,7 +113,7 @@ namespace SRC.DB.Responsibility.Distribute
 
             var sub = DB.equipment_maintains.AsNoTracking().Where(x => x.pid == setting.sub_pid).FirstOrDefault();
             result.sub_name = $"{sub.name}【{subscribepoint?.name}】";
-            result.RemainingStock = sub.stock;
+            result.RemainingStock = setting.stock;
 
             result.pid = data.pid;
             result.apply_amount = data.apply_amount;

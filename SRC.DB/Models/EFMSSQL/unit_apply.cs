@@ -11,7 +11,7 @@ public partial class unit_apply
 
     public int apply_amount { get; set; }
 
-    public string unit { get; set; } = null!;
+    public long unit { get; set; }
 
     public DateTime create_time { get; set; }
 

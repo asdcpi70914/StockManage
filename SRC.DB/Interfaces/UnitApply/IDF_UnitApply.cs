@@ -10,7 +10,7 @@ namespace SRC.DB.Interfaces.UnitApply
 {
     public interface IDF_UnitApply
     {
-        List<UnitApplyComplex> ListUnitApply(string type, long? setting_pid, long? subscribepoint_pid, DateTime? start_time, DateTime? end_time, string state, int? page, int? take, out int rowtotal);
+        List<UnitApplyComplex> ListUnitApply(string type, long? setting_pid, long? subscribepoint_pid, DateTime? start_time, DateTime? end_time, List<string> state, long? unit, int? page, int? take, out int rowtotal);
 
         UnitApplyEditComplex GetUnitApply(long pid);
 
@@ -24,9 +24,9 @@ namespace SRC.DB.Interfaces.UnitApply
 
         Task Review(long pid, string state, string memo,string account);
 
-        Dictionary<long, string> DicMinBaseStoc(string type);
+        Dictionary<long, string> DicMinBaseStoc(string type,long? unit = null);
 
-        int? GetRemainingStock(string type, long pid);
+        min_base_stock_subscribe_setting GetRemainingStock(string type, long pid);
 
         List<UnitApplyReviewLogComplex> ListReviewLogs(long pid);
     }

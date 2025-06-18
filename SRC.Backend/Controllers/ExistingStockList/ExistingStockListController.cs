@@ -5,12 +5,14 @@ using SRC.Backend.Models.Pages.ExistingStock;
 using SRC.Backend.Models.Pages.UnitUseReport;
 using SRC.Backend.Models.System;
 using SRC.DB.Interfaces.ExistingStock;
+using SRC.DB.Interfaces.MinBaseStock;
 using SRC.DB.Interfaces.Settings;
 using SRC.DB.Interfaces.SubscribePoint;
 using SRC.DB.Interfaces.UnitApply;
 using SRC.DB.Interfaces.Users;
 using SRC.DB.Responsibility.ExistingStock;
 using SRC.DB.Responsibility.Settings;
+using SRC.DB.Responsibility.SubscribePoint;
 using SRC.DB.Responsibility.Users;
 
 namespace SRC.Backend.Controllers.ExistingStockList
@@ -20,17 +22,23 @@ namespace SRC.Backend.Controllers.ExistingStockList
         private SysAppsetting Setting { get; set; }
         private ExistingStockLogic _ExistingStockLogic { get; set; }
         private IDF_ExistingStock DF_ExistingStock { get; set; }
+        private IDF_MinBaseStock DF_MinBaseStock { get; set; }
+        private IDF_SubscribePoint DF_SubscribePoint { get; set; }
 
         public ExistingStockListController(
             SysAppsetting setting,
             IHttpContextAccessor cxtAccessor,
             IConfiguration config,
             IDF_ExistingStock dF_ExistingStock,
+            IDF_MinBaseStock dF_MinBaseStock,
+            IDF_SubscribePoint dF_SubscribePoint,
             Serilog.ILogger slog) : base(cxtAccessor, config, slog)
         {
             Setting = setting;
             DF_ExistingStock = dF_ExistingStock;
             _ExistingStockLogic = new ExistingStockLogic(slog, DF_ExistingStock);
+            DF_MinBaseStock = dF_MinBaseStock;
+            DF_SubscribePoint = dF_SubscribePoint;
         }
 
         public IActionResult Index()
@@ -61,7 +69,9 @@ namespace SRC.Backend.Controllers.ExistingStockList
 
             ExcelLogic excelLogic = new ExcelLogic(SLog);
 
-            byte[] excelResult = excelLogic.ExistingStockReport(data.Data);
+            SRCLoginMeta meta = User.Identity.LoginMeta();
+
+            byte[] excelResult = excelLogic.ExistingStockReport(data.Data,DF_MinBaseStock,DF_SubscribePoint, meta.Unit);
 
             if (excelResult != null)
             {

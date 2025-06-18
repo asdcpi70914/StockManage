@@ -39,6 +39,11 @@ namespace SRC.DB.Responsibility.SubscribePoint
             return Pagination(data, page, take, out rowtotal);
         }
 
+        public List<subscribepoint_maintain> ListSubscribePoint(List<long> pids)
+        {
+            return DB.subscribepoint_maintains.AsNoTracking().Where(x => pids.Contains(x.pid)).ToList();
+        }
+
         public subscribepoint_maintain GetSubscribePoint(long pid)
         {
             return DB.subscribepoint_maintains.AsNoTracking().Where(x => x.pid == pid).FirstOrDefault();

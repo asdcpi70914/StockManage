@@ -76,7 +76,7 @@ namespace SRC.Backend.Controllers.PurchaseStockIn
             lyAoe.AOEObject = new PurchaseStockInEdit
             {
                 pid = data.pid,
-                old_stock = data.stock,
+                //old_stock = data.stock,
                 Action = ActionMode.EDIT
             };
 

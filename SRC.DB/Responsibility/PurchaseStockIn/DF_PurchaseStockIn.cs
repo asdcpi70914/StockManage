@@ -63,13 +63,13 @@ namespace SRC.DB.Responsibility.PurchaseStockIn
             stockin_log log = new stockin_log()
             {
                 equipment_pid = pid,
-                old_stock = data.stock,
-                new_stock  = data.stock + stock,
+                //old_stock = data.stock,
+                //new_stock  = data.stock + stock,
                 create_time = DateTime.Now,
                 creator = account
             };
 
-            data.stock = data.stock + stock;
+            //data.stock = data.stock + stock;
             data.editor = account;
             data.edit_time = DateTime.Now;
 

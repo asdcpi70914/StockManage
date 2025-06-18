@@ -110,7 +110,7 @@ namespace SRC.Backend.Controllers.Equipment
                 pid = data.pid,
                 name = data.name,
                 price = data.price,
-                stock = data.stock,
+                //stock = data.stock,
                 Action = ActionMode.EDIT
             };
 
